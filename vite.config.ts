@@ -8,19 +8,31 @@ let sessionCache: { nonce: string; cookie: string; timestamp: number } | null = 
 
 async function fetchFreshSession() {
   try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
+
     const homeRes = await fetch('https://ventanillasocial.dnp.gov.co/', {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
       },
+      signal: controller.signal,
     });
+    clearTimeout(timeout);
+
     const html = await homeRes.text();
     const nonceMatch = html.match(/var\s+_ruiPubNonce\s*=\s*['"]([a-f0-9]+)['"]/i);
     const nonce = nonceMatch ? nonceMatch[1] : '';
 
     let cookies: string[] = [];
-    if (homeRes.headers.getSetCookie) {
-      cookies = homeRes.headers.getSetCookie().map((c) => c.split(';')[0].trim());
-    } else {
+    if (typeof (homeRes.headers as any).getSetCookie === 'function') {
+      const list = (homeRes.headers as any).getSetCookie();
+      if (Array.isArray(list) && list.length > 0) {
+        for (const item of list) {
+          if (item) cookies.push(item.split(';')[0].trim());
+        }
+      }
+    }
+    if (cookies.length === 0) {
       const raw = homeRes.headers.get('set-cookie') || '';
       const regex = /([a-zA-Z0-9_\-\.]+)=([^;,\s]+)/g;
       let match;
@@ -46,7 +58,8 @@ async function fetchFreshSession() {
 }
 
 async function getSession(forceRefresh = false) {
-  if (!forceRefresh && sessionCache && Date.now() - sessionCache.timestamp < 10 * 60 * 1000) {
+  // TTL de 90 segundos para garantizar que el token CSRF y sesión ASP.NET no caduquen
+  if (!forceRefresh && sessionCache && Date.now() - sessionCache.timestamp < 90 * 1000) {
     return sessionCache;
   }
   return await fetchFreshSession();
@@ -244,8 +257,11 @@ function dnpLookupDevPlugin(): Plugin {
                   queryDevEndpoint('https://ventanillasocial.dnp.gov.co/Home/ConsultarGrupoSisben', payloadCC, session),
                 ]);
 
-                // Si la sesión fue rechazada (HTTP 401, 403), reintentar una vez con sesión fresca
-                if (rui.status === 401 || rui.status === 403 || sisben.status === 401 || sisben.status === 403) {
+                // Si la sesión fue rechazada (HTTP 401, 403) O si ambos endpoints fallaron (indica sesión/nonce caducado en DNP)
+                const ambosFallaron = (!rui.data || !rui.data.ok) && (!sisben.data || !sisben.data.ok);
+                const sesionRechazada = rui.status === 401 || rui.status === 403 || sisben.status === 401 || sisben.status === 403;
+
+                if (sesionRechazada || ambosFallaron) {
                   const refreshed = await getSession(true);
                   if (refreshed && refreshed.nonce) {
                     session = refreshed;

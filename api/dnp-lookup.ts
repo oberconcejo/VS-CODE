@@ -135,7 +135,7 @@ let isolateSession: SessionData | null = null;
 async function fetchFreshSession(): Promise<SessionData | null> {
   try {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 2800);
+    const timeout = setTimeout(() => controller.abort(), 5000);
 
     const res = await fetch('https://ventanillasocial.dnp.gov.co/', {
       headers: {
@@ -167,7 +167,8 @@ async function fetchFreshSession(): Promise<SessionData | null> {
 
 async function getCachedOrFreshSession(forceRefresh = false): Promise<SessionData | null> {
   const now = Date.now();
-  if (!forceRefresh && isolateSession && now - isolateSession.timestamp < 10 * 60 * 1000) {
+  // TTL estricto de 90 segundos para evitar que caduque la sesión en Ventanilla Social del DNP
+  if (!forceRefresh && isolateSession && now - isolateSession.timestamp < 90 * 1000) {
     return isolateSession;
   }
   const fresh = await fetchFreshSession();
@@ -242,9 +243,16 @@ export async function fetchDnpCitizen(
       queryDnpEndpoint('https://ventanillasocial.dnp.gov.co/Home/ConsultarGrupoSisben', payloadCC, session, timeoutMs),
     ]);
 
-    if (rui.status === 401 || rui.status === 403 || sisben.status === 401 || sisben.status === 403) {
-      session = await getCachedOrFreshSession(true);
-      if (session && session.nonce) {
+    // Detección proactiva de sesión inválida o caducada:
+    // Si el DNP devolvió error de autorización O si ninguno de los endpoints arrojó ok
+    // reintentamos inmediatamente con una sesión 100% fresca del servidor gubernamental
+    const ambosFallaron = (!rui.data || !rui.data.ok) && (!sisben.data || !sisben.data.ok);
+    const sesionRechazada = rui.status === 401 || rui.status === 403 || sisben.status === 401 || sisben.status === 403;
+
+    if (sesionRechazada || ambosFallaron) {
+      const freshSession = await getCachedOrFreshSession(true);
+      if (freshSession && freshSession.nonce) {
+        session = freshSession;
         [rui, sisben] = await Promise.all([
           queryDnpEndpoint('https://ventanillasocial.dnp.gov.co/Home/ObtenerDatosRUI', payloadCC, session, timeoutMs),
           queryDnpEndpoint('https://ventanillasocial.dnp.gov.co/Home/ConsultarGrupoSisben', payloadCC, session, timeoutMs),
