@@ -192,8 +192,7 @@ const NAV_LINKS = [
   { id: 'inicio', label: 'Inicio', href: '#inicio' },
   { id: 'caracteristicas', label: 'Características', href: '#caracteristicas' },
   { id: 'cobertura', label: 'Cobertura', href: '#cobertura' },
-  { id: 'seguridad', label: 'Seguridad', href: '#seguridad' },
-  { id: 'contacto', label: 'Contacto', href: '#contacto' },
+    { id: 'contacto', label: 'Contacto', href: '#contacto' },
 ];
 
 export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin }) => {
@@ -861,51 +860,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin }) =
         </section>
 
         {/* =========================================================================
-            5. SECCIÓN DE ACCESO RESTRINGIDO
-            ========================================================================= */}
-        <section id="seguridad" className="scroll-mt-24 py-20 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto text-center border-t border-white/[0.08]">
-          <motion.div
-            initial={{ opacity: 0, y: 24, scale: 0.97 }}
-            whileInView={{ opacity: 1, y: 0, scale: 1 }}
-            viewport={{ once: true, margin: '-60px' }}
-            transition={appleSpring}
-            className="p-8 sm:p-12 rounded-3xl bg-white/[0.03] backdrop-blur-2xl border border-white/[0.08] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.12),0_20px_50px_rgba(0,0,0,0.45)] will-change-transform"
-          >
-            <div className="w-12 h-12 rounded-2xl bg-blue-600/10 border border-blue-500/30 text-blue-400 mx-auto flex items-center justify-center mb-5">
-              <Shield className="w-6 h-6" strokeWidth={2} />
-            </div>
-            <h2 className="text-2xl sm:text-4xl font-black text-white tracking-tight">
-              Acceso Institucional Restringido
-            </h2>
-            <p className="text-sm text-zinc-300 leading-relaxed max-w-xl mx-auto mt-3">
-              Esta plataforma es de uso exclusivo para equipos electorales registrados. Ingrese con sus credenciales autorizadas para acceder a los módulos de su corporación.
-            </p>
-            <div className="mt-6 flex justify-center">
-              <motion.button
-                type="button"
-                whileHover="hover"
-                whileTap={{ scale: 0.96 }}
-                transition={appleSpring}
-                onClick={onNavigateToLogin}
-                className="px-8 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold tracking-wide transition-colors shadow-xl shadow-blue-600/35 cursor-pointer flex items-center gap-2 border border-blue-400/30 will-change-transform"
-              >
-                <span>Acceder a la plataforma</span>
-                <motion.span
-                  variants={{
-                    hover: { x: 4 },
-                  }}
-                  transition={appleSpring}
-                  className="inline-block"
-                >
-                  <ArrowRight className="w-4 h-4" />
-                </motion.span>
-              </motion.button>
-            </div>
-          </motion.div>
-        </section>
-
-        {/* =========================================================================
-            6. SECCIÓN PREGUNTAS FRECUENTES
+            5. SECCIÓN PREGUNTAS FRECUENTES
             ========================================================================= */}
         <section id="contacto" className="scroll-mt-24 py-16 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto border-t border-white/[0.08] text-left">
           <div className="text-center mb-8 space-y-1">
@@ -972,7 +927,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin }) =
       </main>
 
       {/* =========================================================================
-          7. FOOTER TÉCNICO SOBRIO
+          6. FOOTER TÉCNICO SOBRIO
           ========================================================================= */}
       <footer className="border-t border-white/[0.08] bg-[#05070D]/85 backdrop-blur-xl py-10 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto space-y-6">
