@@ -24,7 +24,7 @@ export const SuspendedTenantScreen: React.FC<SuspendedTenantScreenProps> = ({
       {/* Background ambient glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-rose-500/10 rounded-full blur-3xl pointer-events-none" />
 
-      <div className="max-w-md w-full bg-slate-900/90 border border-rose-500/30 rounded-3xl p-8 shadow-2xl backdrop-blur-xl relative z-10 text-center animate-in fade-in zoom-in-95 duration-300">
+    <div className="max-w-md w-full bg-[#141418]/95 border border-white/[0.06] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)] rounded-3xl p-8 backdrop-blur-xl relative z-10 text-center animate-in fade-in zoom-in-95 duration-200">
         {/* Shield Icon */}
         <div className="mx-auto w-16 h-16 rounded-2xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-400 mb-6 shadow-lg shadow-rose-950/40">
           <ShieldAlert className="h-8 w-8" />
@@ -40,7 +40,7 @@ export const SuspendedTenantScreen: React.FC<SuspendedTenantScreenProps> = ({
         </p>
 
         {/* Notice box */}
-        <div className="mt-6 p-4 rounded-2xl bg-slate-950/60 border border-slate-800 text-left space-y-2">
+      <div className="mt-6 p-4 rounded-2xl bg-[#09090B] border border-white/[0.06] text-left space-y-2">
           <div className="flex items-center gap-2 text-xs font-semibold text-slate-300">
             <HelpCircle className="h-4 w-4 text-purple-400 shrink-0" />
             <span>¿Cómo restablecer el servicio?</span>

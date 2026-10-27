@@ -61,7 +61,7 @@ export const SignOutModal: React.FC<SignOutModalProps> = ({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 8 }}
             transition={{ duration: 0.15, ease: 'easeOut' }}
-            className="relative w-full max-w-sm rounded-2xl bg-white dark:bg-slate-900/95 border border-slate-200 dark:border-slate-800 p-6 sm:p-7 shadow-2xl backdrop-blur-xl overflow-hidden z-10"
+              className="relative w-full max-w-sm rounded-2xl bg-white dark:bg-[#141418]/95 border border-slate-200 dark:border-white/[0.06] shadow-[0_8px_24px_rgba(0,0,0,0.18)] backdrop-blur-xl p-6 sm:p-7 overflow-hidden z-10"
           >
             {/* Micro-resplandor superior centrado */}
             <div

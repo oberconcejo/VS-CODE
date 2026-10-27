@@ -215,7 +215,7 @@ export const LeaderVotesListView: React.FC<LeaderVotesViewProps> = ({
           {/* Botón Registrar Nuevo */}
           <button
             onClick={onNavigateRegister}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-bold shadow-md shadow-blue-600/25 transition-all cursor-pointer active:scale-98"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#141418] hover:bg-[#1b1b20] border border-white/[0.08] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)] text-white text-xs font-bold transition-[background-color,transform] duration-200 cursor-pointer active:scale-[0.98]"
           >
             <UserPlus className="w-3.5 h-3.5" />
             <span>+ Registrar Nuevo</span>

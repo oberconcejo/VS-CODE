@@ -89,7 +89,7 @@ export const MasterSidebar: React.FC<MasterSidebarProps> = ({
   const sidebarContent = (
     <div className="flex flex-col h-full bg-white dark:bg-[#0b0f19] border-r border-slate-200 dark:border-purple-900/30 text-slate-700 dark:text-slate-300 transition-colors">
       {/* Platform Branding Header */}
-      <div className={`p-5 border-b border-slate-200 dark:border-purple-900/20 bg-gradient-to-b from-purple-50/60 dark:from-purple-950/30 via-transparent to-transparent shrink-0 ${
+      <div className={`p-5 border-b border-slate-200 dark:border-white/[0.06] bg-[#0E0E11] shrink-0 ${
         onCloseMobile ? 'pt-[max(1.25rem,env(safe-area-inset-top))]' : ''
       }`}>
         <div className="flex items-center justify-between">
@@ -109,7 +109,7 @@ export const MasterSidebar: React.FC<MasterSidebarProps> = ({
             aria-label="Recargar plataforma"
             className="flex items-center gap-3 cursor-pointer select-none group active:scale-95 transition-transform"
           >
-            <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-purple-700 via-purple-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-purple-600/25 ring-1 ring-purple-400/40 group-hover:ring-purple-300 transition-all">
+            <div className="h-10 w-10 rounded-xl bg-[#141418] border border-white/[0.08] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)] flex items-center justify-center text-white group-hover:border-cyan-400/40 transition-[border-color,transform] duration-200">
               <Layers className="h-5 w-5" />
             </div>
             <div>
@@ -277,7 +277,7 @@ export const MasterSidebar: React.FC<MasterSidebarProps> = ({
             onClick={onCloseMobile}
             aria-hidden="true"
           />
-          <div className="fixed inset-y-0 left-0 z-[70] w-[85vw] max-w-xs h-[100dvh] max-h-[100dvh] bg-white dark:bg-[#0b0f19] border-r border-slate-200 dark:border-purple-900/30 shadow-2xl flex flex-col justify-between overflow-hidden animate-in slide-in-from-left duration-200">
+          <div className="fixed inset-y-0 left-0 z-[70] w-[85vw] max-w-xs h-[100dvh] max-h-[100dvh] bg-white dark:bg-[#0E0E11] border-r border-slate-200 dark:border-white/[0.06] shadow-[8px_0_24px_rgba(0,0,0,0.18)] flex flex-col justify-between overflow-hidden animate-in slide-in-from-left duration-200">
             {sidebarContent}
           </div>
         </div>

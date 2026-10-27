@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useCallback, Suspense } from 'react';
 import { Sidebar, type SidebarTabId } from './Sidebar';
 import { TenantSwitcher } from './TenantSwitcher';
-import { Construction, ArrowLeft, Shield, UserPlus, Loader2 } from 'lucide-react';
+import { Construction, ArrowLeft, Shield, UserPlus } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ThemeToggle } from '../ui/ThemeToggle';
 import { useSidebar } from '../../context/SidebarContext';
 import { useOnlineStatus } from '../../hooks/useOnlineStatus';
+import { ViewSkeletonFallback } from '../ui/ViewSkeletonFallback';
 
 const DirectorDashboardView = React.lazy(() =>
   import('../../modules/dashboard/DirectorDashboardView').then((m) => ({
@@ -81,14 +82,6 @@ const TAB_TITLES: Record<SidebarTabId, { title: string; subtitle: string; phase:
   },
 };
 
-const ViewLoadingSpinner: React.FC = () => (
-  <div className="w-full py-20 flex flex-col items-center justify-center text-slate-400">
-    <Loader2 className="w-7 h-7 animate-spin text-blue-500 mb-2.5" />
-    <span className="text-xs font-mono uppercase tracking-wider text-slate-500">
-      Cargando vista...
-    </span>
-  </div>
-);
 
 export const AppLayout = ({
   userEmail = 'admin@electoral.gov',
@@ -168,7 +161,7 @@ export const AppLayout = ({
           />
 
           <aside
-            className="fixed inset-y-0 left-0 z-[70] w-[84vw] max-w-xs h-[100dvh] max-h-[100dvh] bg-white dark:bg-[#0c0c0e] border-r border-slate-200/90 dark:border-white/[0.07] shadow-2xl flex flex-col justify-between overflow-hidden animate-in slide-in-from-left duration-200"
+              className="fixed inset-y-0 left-0 z-[70] w-[84vw] max-w-xs h-[100dvh] max-h-[100dvh] bg-white dark:bg-[#0E0E11] border-r border-slate-200/90 dark:border-white/[0.06] shadow-[8px_0_24px_rgba(0,0,0,0.18)] flex flex-col justify-between overflow-hidden animate-in slide-in-from-left duration-200"
           >
             <Sidebar
               activeTab={activeTab}
@@ -261,7 +254,7 @@ export const AppLayout = ({
               className="w-full min-h-full"
               style={{ willChange: 'opacity, transform' }}
             >
-              <Suspense fallback={<ViewLoadingSpinner />}>
+              <Suspense fallback={<ViewSkeletonFallback />}>
                 {activeTab === 'dashboard' ? (
                   <DirectorDashboardView
                     onNavigateToElectors={navigateToElectors}

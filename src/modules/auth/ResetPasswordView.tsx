@@ -38,7 +38,7 @@ export const ResetPasswordView: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#070b14] flex items-center justify-center p-4">
-      <div className="bg-[#0b1326] border border-[#16223e] p-8 rounded-3xl max-w-md w-full shadow-2xl">
+      <div className="bg-[#141418] border border-white/[0.06] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)] p-8 rounded-3xl max-w-md w-full">
         <h2 className="text-xl font-bold text-white mb-2">Restablecer Contraseña</h2>
         <p className="text-xs text-slate-400 mb-6">Ingresa tu nueva contraseña para acceder a la plataforma.</p>
 

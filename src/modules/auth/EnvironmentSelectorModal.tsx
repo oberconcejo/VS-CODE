@@ -55,7 +55,7 @@ export const EnvironmentSelectorModal: React.FC<EnvironmentSelectorProps> = ({
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 14 }}
           transition={{ duration: 0.24, ease: [0.16, 1, 0.3, 1] }}
-          className="w-full max-w-5xl bg-white dark:bg-[#070b14] border border-slate-200 dark:border-[#162345] rounded-[36px] shadow-2xl p-6 sm:p-10 relative text-slate-800 dark:text-slate-100 transition-all my-auto"
+          className="w-full max-w-5xl bg-white dark:bg-[#141418] border border-slate-200 dark:border-white/[0.06] rounded-[36px] shadow-[0_8px_24px_rgba(0,0,0,0.18)] p-6 sm:p-10 relative text-slate-800 dark:text-slate-100 transition-[background-color,border-color] duration-200 my-auto"
         >
           {/* Badge Superior */}
           <div className="flex justify-center mb-4">

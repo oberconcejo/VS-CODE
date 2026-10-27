@@ -112,7 +112,7 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({
             <span>{initials}</span>
 
             {/* Indicador de sesión activa en la esquina inferior derecha con LED pulsante */}
-            <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-white dark:border-[#0C152B] flex items-center justify-center shadow-xs">
+            <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-500 border border-white dark:border-[#0C152B] flex items-center justify-center shadow-xs">
               <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
             </span>
           </div>
@@ -126,7 +126,7 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({
               animate={{ opacity: 1, scale: 1, x: 0 }}
               exit={{ opacity: 0, scale: 0.95, x: 10 }}
               transition={{ duration: 0.16, ease: [0.16, 1, 0.3, 1] }}
-              className="absolute left-full ml-3.5 bottom-0 w-64 rounded-2xl bg-white/95 dark:bg-[#0C152B]/95 backdrop-blur-xl border border-slate-200 dark:border-blue-500/20 shadow-2xl p-3 z-50 select-none"
+              className="absolute left-full ml-3.5 bottom-0 w-64 rounded-2xl bg-white/95 dark:bg-[#141418]/95 backdrop-blur-xl border border-slate-200 dark:border-white/[0.06] shadow-[0_8px_24px_rgba(0,0,0,0.18)] p-3 z-50 select-none"
             >
               {/* Cabecera del popover */}
               <div className="flex items-center gap-3 pb-3 border-b border-slate-100 dark:border-white/5">
@@ -198,7 +198,7 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({
           <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 border border-blue-400/30 text-white font-bold text-xs flex items-center justify-center shadow-xs">
             {initials}
           </div>
-          <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-500 border-2 border-white dark:border-[#18181b] flex items-center justify-center shadow-xs">
+          <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-500 border border-white dark:border-[#18181b] flex items-center justify-center shadow-xs">
             <span className="w-1 h-1 rounded-full bg-white" />
           </span>
         </div>

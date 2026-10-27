@@ -517,7 +517,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full mt-2 bg-gradient-to-r from-blue-600 via-blue-500 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white font-bold py-3.5 px-6 rounded-xl transition-all shadow-lg shadow-blue-500/25 hover:shadow-cyan-500/35 active:scale-[0.99] flex items-center justify-center gap-2 text-sm disabled:opacity-60 cursor-pointer"
+              className="w-full mt-2 bg-[#141418] hover:bg-[#1b1b20] text-white font-bold py-3.5 px-6 rounded-xl border border-white/[0.08] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)] transition-[background-color,transform,box-shadow] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-cyan-300/80 flex items-center justify-center gap-2 text-sm disabled:opacity-60 cursor-pointer"
               >
                 {loading && <Loader2 className="w-4 h-4 animate-spin" />}
                 <span>{loading ? 'Verificando credenciales...' : 'Iniciar Sesión'}</span>

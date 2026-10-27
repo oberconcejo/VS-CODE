@@ -69,7 +69,7 @@ export const PremiumAlertModal: React.FC<PremiumAlertModalProps> = ({
       iconColor: 'text-indigo-500 dark:text-indigo-400',
       iconBg: 'bg-indigo-500/10 dark:bg-indigo-500/15 border-indigo-500/25',
       glow: 'bg-indigo-500/20 dark:bg-indigo-500/15',
-      button: 'bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 shadow-indigo-500/25 text-white',
+      button: 'bg-[#141418] hover:bg-[#1b1b20] border border-white/[0.08] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)] text-white',
       badge: 'border-indigo-500/20 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400',
       badgeText: 'AVISO',
     },

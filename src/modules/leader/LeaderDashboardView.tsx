@@ -114,7 +114,7 @@ export const LeaderDashboardView: React.FC<LeaderDashboardProps> = ({
           </div>
           <div className="w-full h-2 rounded-full overflow-hidden bg-slate-100 dark:bg-[#060a14]">
             <div
-              className="h-full bg-gradient-to-r from-blue-600 to-indigo-500 dark:from-blue-500 dark:to-sky-400 transition-all duration-700 ease-out rounded-full"
+                className="h-full bg-cyan-400 transition-[width] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] rounded-full"
               style={{ width: `${Math.min(100, Math.max(0, porcentajeAvance))}%` }}
             />
           </div>
@@ -124,7 +124,7 @@ export const LeaderDashboardView: React.FC<LeaderDashboardProps> = ({
           <button
             type="button"
             onClick={onNavigateToRegister}
-            className="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-blue-600/25 active:scale-98 transition-all cursor-pointer font-mono"
+              className="w-full py-3.5 px-4 rounded-2xl bg-[#141418] hover:bg-[#1b1b20] border border-white/[0.08] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)] text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 active:scale-[0.98] transition-[background-color,transform] duration-200 cursor-pointer font-mono"
           >
             <UserPlus className="w-4 h-4" />
             <span>Registrar Nuevo Elector Ahora</span>

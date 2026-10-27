@@ -670,7 +670,7 @@ export default defineConfig({
             if (id.includes('recharts')) return 'charts';
             if (id.includes('@supabase')) return 'supabase';
             if (id.includes('lucide-react')) return 'icons';
-            if (id.includes('framer-motion')) return 'motion';
+            if (id.includes('framer-motion') || id.includes('node_modules/motion') || id.includes('node_modules\\motion')) return 'motion';
             if (id.includes('react-dom') || id.includes('react/')) return 'vendor';
           }
         },

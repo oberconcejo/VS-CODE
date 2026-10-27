@@ -156,7 +156,7 @@ export const Sidebar = ({
               <Shield className="w-5 h-5 text-white" strokeWidth={2.2} />
               <span className="absolute -top-0.5 -right-0.5 flex h-2.5 w-2.5">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500 border-2 border-white dark:border-[#161F30]"></span>
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500 border border-white dark:border-[#161F30]"></span>
               </span>
             </div>
 
@@ -195,7 +195,7 @@ export const Sidebar = ({
                   <Shield className="w-5 h-5 text-white" strokeWidth={2.2} />
                   <span className="absolute -top-0.5 -right-0.5 flex h-2.5 w-2.5">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500 border-2 border-white dark:border-[#161F30]"></span>
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500 border border-white dark:border-[#161F30]"></span>
                   </span>
                 </div>
 
@@ -328,7 +328,7 @@ export const Sidebar = ({
 
                 {/* Tooltip Flotante para modo colapsado (Mini Rail) */}
                 {isEffectivelyCollapsed && (
-                  <div className="absolute left-full ml-3.5 top-1/2 -translate-y-1/2 px-3 py-1.5 rounded-xl bg-slate-900 text-white dark:bg-[#18181b] dark:text-zinc-100 border border-slate-800 dark:border-white/[0.08] text-xs font-medium shadow-2xl whitespace-nowrap z-50 pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-150 transform -translate-x-1 group-hover:translate-x-0 flex items-center gap-1.5">
+                  <div className="absolute left-full ml-3.5 top-1/2 -translate-y-1/2 px-3 py-1.5 rounded-xl bg-[#141418] text-white dark:bg-[#18181b] dark:text-zinc-100 border border-white/[0.08] text-xs font-medium shadow-[0_8px_24px_rgba(0,0,0,0.18)] whitespace-nowrap z-50 pointer-events-none opacity-0 group-hover:opacity-100 transition-[opacity,transform] duration-150 transform -translate-x-1 group-hover:translate-x-0 flex items-center gap-1.5">
                     <span>{item.label}</span>
                     <span className="absolute -left-1 top-1/2 -translate-y-1/2 border-4 border-transparent border-r-slate-900 dark:border-r-[#18181b]" />
                   </div>
@@ -389,7 +389,7 @@ export const Sidebar = ({
                   transition={{ duration: 0.16 }}
                   className={`absolute bottom-full mb-2 ${
                     isEffectivelyCollapsed ? 'left-full ml-3 w-64' : 'left-0 right-0'
-                  } bg-white dark:bg-[#1A2333] border border-slate-200 dark:border-slate-700/90 rounded-2xl shadow-2xl p-2 z-50 text-xs backdrop-blur-xl`}
+                  } bg-white dark:bg-[#141418] border border-slate-200 dark:border-white/[0.06] rounded-2xl shadow-[0_8px_24px_rgba(0,0,0,0.18)] p-2 z-50 text-xs backdrop-blur-xl`}
                 >
                   <div className="space-y-1">
                     <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 block">

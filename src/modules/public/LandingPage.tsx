@@ -1,728 +1,915 @@
-import React, { useState } from 'react';
-import { motion, type Variants } from 'framer-motion';
+import Lenis from 'lenis';
+import React, { useState, useEffect } from 'react';
+import {
+  motion,
+  AnimatePresence,
+  useScroll,
+  useTransform,
+  useSpring,
+  type Variants,
+} from 'motion/react';
 import {
   Shield,
+  Menu,
+  X,
   ArrowRight,
   Check,
   Cloud,
   Headphones,
   Users,
   BarChart3,
-  Building,
   Building2,
-  MapPin,
   Map,
   ShieldCheck,
   ChevronRight,
   Landmark,
-  Radio,
-  Vote,
 } from 'lucide-react';
+import { ArchitecturalBackground } from '../../components/ui/ArchitecturalBackground';
+import { AnimatedCounter } from '../../components/ui/AppleAnimatedCounter';
 
 interface LandingPageProps {
   onNavigateToLogin: () => void;
 }
 
-// ============================================================================
-// ANIMACIONES BIDIRECCIONALES FLUIDAS (SCROLL DOWN & SCROLL UP)
-// ============================================================================
-const fluidFadeUp: Variants = {
-  hidden: { opacity: 0, y: 32, filter: 'blur(6px)' },
-  visible: (custom: number = 0) => ({
+// ----------------------------------------------------------------------------
+// CURVAS Y FÍSICAS DE RESORTE APPLE PRO-MOTION
+// ----------------------------------------------------------------------------
+const appleSpring = {
+  type: 'spring' as const,
+  stiffness: 400,
+  damping: 32,
+  mass: 0.85,
+};
+
+const appleSoftSpring = {
+  type: 'spring' as const,
+  stiffness: 120,
+  damping: 24,
+  mass: 0.8,
+};
+
+// Keynote Stagger Container & Items
+const keynoteContainer: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+      delayChildren: 0.05,
+    },
+  },
+};
+
+const keynoteItem: Variants = {
+  hidden: {
+    opacity: 0,
+    y: 18,
+    filter: 'blur(8px)',
+  },
+  visible: {
     opacity: 1,
     y: 0,
     filter: 'blur(0px)',
     transition: {
-      duration: 0.7,
-      delay: custom * 0.08,
-      ease: [0.16, 1, 0.3, 1] as const,
+      duration: 0.6,
+      ease: [0.22, 1, 0.36, 1],
     },
-  }),
+  },
 };
 
-// ============================================================================
-// COMPONENTE PRINCIPAL LANDING PAGE ELECTORAL
-// ============================================================================
+// ----------------------------------------------------------------------------
+// DATOS REALES DE LAS CORPORACIONES Y NIVELES ELECTORALES
+// ----------------------------------------------------------------------------
+interface CorporationData {
+  id: 'gobernacion' | 'asamblea' | 'alcaldia' | 'concejo';
+  name: string;
+  scope: string;
+  tag: string;
+  color: string;
+  bgLight: string;
+  icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
+  summary: string;
+  metrics: {
+    label: string;
+    numValue?: number;
+    value: string;
+  }[];
+  responsibilities: string[];
+}
+
+const CORPORATIONS: CorporationData[] = [
+  {
+    id: 'gobernacion',
+    name: 'Gobernaciones',
+    scope: 'Nivel Departamental Ejecutivo',
+    tag: '32 Departamentos',
+    color: 'text-amber-400',
+    bgLight: 'bg-amber-500/10 border-amber-500/25',
+    icon: Map,
+    summary:
+      'Órgano ejecutivo departamental responsable de la administración de recursos regionales, seguridad y planes de desarrollo territorial.',
+    metrics: [
+      { label: 'Cargos ejecutivos', numValue: 32, value: '32' },
+      { label: 'Departamentos', numValue: 32, value: '32' },
+      { label: 'Censo electoral', value: '39.0M+' },
+      { label: 'Período constitucional', value: '4 Años' },
+    ],
+    responsibilities: [
+      'Coordinación de infraestructura vial y salud departamental',
+      'Dirección de políticas públicas territoriales',
+      'Articulación institucional con el Gobierno Nacional',
+    ],
+  },
+  {
+    id: 'asamblea',
+    name: 'Asambleas Departamentales',
+    scope: 'Nivel Departamental Coadministrador',
+    tag: '418 Curules Nacionales',
+    color: 'text-emerald-400',
+    bgLight: 'bg-emerald-500/10 border-emerald-500/25',
+    icon: Landmark,
+    summary:
+      'Corporaciones públicas de elección popular que ejercen control político sobre las gobernaciones y expiden ordenanzas.',
+    metrics: [
+      { label: 'Asambleas', numValue: 32, value: '32' },
+      { label: 'Curules totales', numValue: 418, value: '418' },
+      { label: 'Circunscripciones', value: 'Departamental' },
+      { label: 'Umbral promedio', value: '50% Cifra Repartidora' },
+    ],
+    responsibilities: [
+      'Control político a secretarías departamentales',
+      'Debate y aprobación de presupuestos regionales',
+      'Reglamentación de tributos y estampillas',
+    ],
+  },
+  {
+    id: 'alcaldia',
+    name: 'Alcaldías Municipales',
+    scope: 'Nivel Local Ejecutivo',
+    tag: '1.102 Municipios y Distritos',
+    color: 'text-rose-400',
+    bgLight: 'bg-rose-500/10 border-rose-500/25',
+    icon: Building2,
+    summary:
+      'Máxima autoridad política y administrativa en el municipio, encargada del orden público local y desarrollo social.',
+    metrics: [
+      { label: 'Municipios', numValue: 1102, value: '1.102' },
+      { label: 'Distritos especiales', numValue: 6, value: '6' },
+      { label: 'Puestos de votación', numValue: 12000, value: '+12.000' },
+      { label: 'Mesas instaladas', numValue: 106000, value: '+106.000' },
+    ],
+    responsibilities: [
+      'Gestión del Plan de Ordenamiento Territorial (POT)',
+      'Administración de educación, salud y servicios públicos',
+      'Preservación de la convivencia y orden público local',
+    ],
+  },
+  {
+    id: 'concejo',
+    name: 'Concejos Municipales',
+    scope: 'Nivel Local Coadministrador',
+    tag: '12.000+ Curules Edilicias',
+    color: 'text-blue-400',
+    bgLight: 'bg-blue-500/10 border-blue-500/25',
+    icon: Users,
+    summary:
+      'Corporaciones político-administrativas que ejercen control sobre la administración municipal y expiden acuerdos.',
+    metrics: [
+      { label: 'Corporaciones', numValue: 1102, value: '1.102' },
+      { label: 'Curules edilicias', numValue: 12000, value: '+12.000' },
+      { label: 'Rango de curules', value: '7 a 45 por municipio' },
+      { label: 'Sistema de elección', value: 'Voto preferente / Cerrado' },
+    ],
+    responsibilities: [
+      'Aprobación de planes de desarrollo municipal',
+      'Autorización de endeudamiento y facultades al alcalde',
+      'Vigilancia directa de la inversión comunitaria',
+    ],
+  },
+];
+
+const NAV_LINKS = [
+  { id: 'inicio', label: 'Inicio', href: '#inicio' },
+  { id: 'caracteristicas', label: 'Características', href: '#caracteristicas' },
+  { id: 'cobertura', label: 'Cobertura', href: '#cobertura' },
+  { id: 'seguridad', label: 'Seguridad', href: '#seguridad' },
+  { id: 'contacto', label: 'Contacto', href: '#contacto' },
+];
+
 export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin }) => {
+  const [activeNav, setActiveNav] = useState('inicio');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [selectedCorpId, setSelectedCorpId] = useState<'gobernacion' | 'asamblea' | 'alcaldia' | 'concejo'>('gobernacion');
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  // --------------------------------------------------------------------------
+  // SCROLL CHOREOGRAPHY & PARALLAX CON INERCIA (APPLE-LIKE PHYSICS)
+  // --------------------------------------------------------------------------
+  const { scrollY, scrollYProgress } = useScroll();
+  const smoothProgress = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001,
+  });
+
+  // Parallax suave en hero & escala cinemática
+  const heroScale = useTransform(smoothProgress, [0, 0.25], [1, 0.96]);
+  const heroOpacity = useTransform(smoothProgress, [0, 0.25], [1, 0.65]);
+  const heroY = useTransform(smoothProgress, [0, 0.3], [0, 40]);
+
+  // --------------------------------------------------------------------------
+  // INICIALIZACIÓN LENIS (60/120 FPS FLUID SCROLLING)
+  // --------------------------------------------------------------------------
+  useEffect(() => {
+    const lenis = new Lenis({
+      duration: 1.1,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      orientation: 'vertical',
+      gestureOrientation: 'vertical',
+      smoothWheel: true,
+      wheelMultiplier: 1.05,
+      touchMultiplier: 1.5,
+    });
+
+    function raf(time: number) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+
+    const animId = requestAnimationFrame(raf);
+
+    return () => {
+      cancelAnimationFrame(animId);
+      lenis.destroy();
+    };
+  }, []);
+
+  // Listener nativo ultra-eficiente para el estado de scroll del Navbar
+  useEffect(() => {
+    return scrollY.on('change', (latest) => {
+      setIsScrolled(latest > 24);
+    });
+  }, [scrollY]);
+
+  const selectedCorp = CORPORATIONS.find((c) => c.id === selectedCorpId) || CORPORATIONS[0];
 
   const toggleFaq = (index: number) => {
     setOpenFaq(openFaq === index ? null : index);
   };
 
   return (
-    <div className="min-h-screen bg-[#070B19] text-white selection:bg-[#155EEF] selection:text-white relative overflow-x-hidden flex flex-col justify-between font-sans">
+    <div className="min-h-screen text-zinc-100 selection:bg-blue-600/30 selection:text-white relative overflow-x-hidden flex flex-col justify-between font-sans antialiased">
+      {/* Fondo Arquitectónico Multicapa */}
+      <ArchitecturalBackground />
+
       {/* =========================================================================
-          A. BARRA DE NAVEGACIÓN (HEADER FIJO GLASSMORPHISM)
+          1. NAVBAR ESTILO macOS / iOS (APPLE VIBRANCY & SPRING PHYSICS)
           ========================================================================= */}
-      <header className="fixed top-0 left-0 right-0 z-50 w-full bg-[#070B19]/85 backdrop-blur-xl border-b border-slate-800/60 shadow-lg shadow-black/20 transition-all">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-          {/* Izquierda: Isotipo + Nombre Institucional */}
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 sm:h-11 sm:w-11 rounded-xl bg-gradient-to-tr from-blue-600 to-cyan-500 flex items-center justify-center text-white shadow-lg shadow-blue-500/25 ring-1 ring-cyan-400/40 shrink-0">
-              <Shield className="w-5.5 h-5.5 sm:w-6 sm:h-6 text-white" strokeWidth={2.4} />
+      <header
+        className={`fixed top-0 inset-x-0 z-50 w-full transition-[background-color,border-color,box-shadow,backdrop-filter] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+          isScrolled
+            ? 'bg-[#060913]/75 backdrop-blur-2xl backdrop-saturate-[180%] border-b border-white/[0.08] shadow-[0_4px_30px_rgba(0,0,0,0.5)]'
+            : 'bg-transparent border-b border-transparent shadow-none'
+        }`}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 sm:h-20 flex items-center justify-between">
+          {/* Logo Institucional con Tap Magnético */}
+          <motion.a
+            href="#inicio"
+            whileTap={{ scale: 0.96 }}
+            transition={appleSpring}
+            onClick={() => setActiveNav('inicio')}
+            className="flex items-center gap-3 min-w-0 group cursor-pointer focus-visible:outline-none"
+          >
+            <div className="h-10 w-10 rounded-xl bg-white/[0.04] backdrop-blur-xl border border-white/[0.12] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.12)] flex items-center justify-center text-blue-400 shrink-0 group-hover:border-blue-500/40 transition-colors">
+              <Shield className="w-5 h-5" strokeWidth={2} />
             </div>
             <div className="flex flex-col text-left">
-              <span className="text-[11px] font-mono tracking-widest text-slate-400 uppercase leading-none font-bold">
+              <span className="text-[10px] font-mono tracking-widest text-zinc-400 uppercase leading-none font-bold">
                 PLATAFORMA
               </span>
               <span className="text-xl sm:text-2xl font-black tracking-tight text-white leading-none mt-1">
                 ELECTORAL
               </span>
             </div>
-          </div>
+          </motion.a>
 
-          {/* Centro: Links de Navegación Minimalistas */}
-          <nav className="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-300">
-            <a href="#inicio" className="text-white hover:text-cyan-400 transition-colors relative py-1">
-              Inicio
-              <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-500 rounded-full" />
-            </a>
-            <a href="#caracteristicas" className="hover:text-cyan-400 transition-colors">
-              Características
-            </a>
-            <a href="#cobertura" className="hover:text-cyan-400 transition-colors">
-              Cobertura
-            </a>
-            <a href="#seguridad" className="hover:text-cyan-400 transition-colors">
-              Seguridad
-            </a>
-            <a href="#contacto" className="hover:text-cyan-400 transition-colors">
-              Contacto
-            </a>
+          {/* Navegación Desktop con indicador deslizante Apple Spring (layoutId="apple-nav-pill") */}
+          <nav
+            aria-label="Navegación principal"
+            className="hidden lg:flex items-center gap-1 p-1.5 rounded-full bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)]"
+          >
+            {NAV_LINKS.map((link) => {
+              const isActive = activeNav === link.id;
+              return (
+                <motion.a
+                  key={link.id}
+                  href={link.href} onClick={(e) => { e.preventDefault(); setActiveNav(link.id); const target = document.querySelector(link.href); if (target) target.scrollIntoView({ behavior: 'smooth' }); }}
+                  whileTap={{ scale: 0.96 }}
+                  className={`relative px-4 py-2 rounded-full text-xs font-semibold tracking-wide transition-colors duration-150 select-none ${
+                    isActive ? 'text-white' : 'text-zinc-400 hover:text-zinc-200'
+                  }`}
+                >
+                  {isActive && (
+                    <motion.div
+                      layoutId="apple-nav-pill"
+                      transition={appleSpring}
+                      className="absolute inset-0 rounded-full bg-blue-600 shadow-[0_0_16px_rgba(37,99,235,0.5)] -z-10"
+                    />
+                  )}
+                  {link.label}
+                </motion.a>
+              );
+            })}
           </nav>
 
-          {/* Derecha: Botón CTA Primario en Azul Eléctrico */}
-          <div className="flex items-center gap-3">
-            <button
+          {/* CTA Desktop con Física Háptica Apple */}
+          <div className="hidden lg:flex items-center gap-3">
+            <motion.button
               type="button"
               onClick={onNavigateToLogin}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#155EEF] hover:bg-blue-500 active:scale-[0.98] text-white text-xs sm:text-sm font-bold tracking-wide transition-all shadow-lg shadow-blue-600/30 hover:shadow-blue-500/50 cursor-pointer border border-blue-400/30"
+              whileHover="hover"
+              whileTap={{ scale: 0.96 }}
+              transition={appleSpring}
+              className="group inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/[0.05] hover:bg-white/[0.09] backdrop-blur-2xl border border-white/[0.12] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.12)] text-white text-xs font-semibold tracking-wide transition-all cursor-pointer focus-visible:outline-none will-change-transform"
             >
               <span>Acceder a la plataforma</span>
-              <ArrowRight className="w-4 h-4 ml-0.5" />
-            </button>
+              <motion.span
+                variants={{
+                  hover: { x: 4 },
+                }}
+                transition={appleSpring}
+                className="inline-block"
+              >
+                <ArrowRight className="w-4 h-4 ml-0.5" />
+              </motion.span>
+            </motion.button>
+          </div>
+
+          {/* Botón de Menú Móvil / Tablet */}
+          <div className="flex lg:hidden items-center gap-2">
+            <motion.button
+              type="button"
+              whileTap={{ scale: 0.95 }}
+              onClick={onNavigateToLogin}
+              className="px-3.5 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-bold sm:hidden active:scale-[0.98]"
+            >
+              Acceder
+            </motion.button>
+            <motion.button
+              type="button"
+              whileTap={{ scale: 0.94 }}
+              aria-label={mobileMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
+              aria-expanded={mobileMenuOpen}
+              onClick={() => setMobileMenuOpen((open) => !open)}
+              className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/[0.1] bg-white/[0.04] backdrop-blur-xl text-zinc-100 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.1)] cursor-pointer"
+            >
+              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </motion.button>
           </div>
         </div>
+
+        {/* Drawer Móvil y Tablet */}
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={appleSpring}
+              className="lg:hidden border-t border-white/[0.08] bg-[#0A0F1D]/95 backdrop-blur-2xl px-4 py-4 overflow-hidden"
+            >
+              <nav className="flex flex-col gap-1.5 text-sm font-semibold">
+                {NAV_LINKS.map((link) => (
+                  <a
+                    key={link.id}
+                    href={link.href}
+                    onClick={() => {
+                      setActiveNav(link.id);
+                      setMobileMenuOpen(false);
+                    }}
+                    className={`rounded-xl px-4 py-2.5 transition-colors ${
+                      activeNav === link.id
+                        ? 'bg-blue-600/15 text-blue-400 border border-blue-500/25'
+                        : 'text-zinc-300 hover:bg-white/[0.04]'
+                    }`}
+                  >
+                    {link.label}
+                  </a>
+                ))}
+                <motion.button
+                  type="button"
+                  whileTap={{ scale: 0.96 }}
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    onNavigateToLogin();
+                  }}
+                  className="mt-3 w-full inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-3 text-sm font-bold text-white shadow-lg shadow-blue-600/30"
+                >
+                  <span>Acceder a la plataforma</span>
+                  <ArrowRight className="w-4 h-4" />
+                </motion.button>
+              </nav>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </header>
 
-      <main className="flex-1 z-10 pt-20" id="inicio">
+      {/* =========================================================================
+          CONTENEDOR MAESTRO
+          ========================================================================= */}
+      <main className="flex-1 z-10 pt-24 sm:pt-28 lg:pt-32 pb-16" id="inicio">
         {/* =========================================================================
-            B. HERO SECTION (DOBLE COLUMNA + HOLOGRAMA 3D MAPA COLOMBIA + PANEL FLOTANTE)
+            2. HERO SECTION CON REVELADO CINEMATOGRÁFICO DE KEYNOTE
             ========================================================================= */}
-        <section className="relative pt-10 pb-20 sm:pt-16 sm:pb-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto overflow-hidden">
-          {/* Luces Ambientales de Fondo */}
-          <div
-            className="absolute top-10 left-1/4 w-[600px] h-[400px] bg-blue-600/20 blur-[150px] pointer-events-none -z-10"
-            aria-hidden="true"
-          />
-          <div
-            className="absolute top-20 right-10 w-[500px] h-[500px] bg-cyan-500/15 blur-[160px] pointer-events-none -z-10"
-            aria-hidden="true"
-          />
-
+        <motion.section
+          style={{ scale: heroScale, opacity: heroOpacity, y: heroY }}
+          className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 sm:pb-24 will-change-transform"
+        >
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
-            {/* Columna Izquierda: Información Principal */}
+            {/* Columna Izquierda: Información Principal con Blur-Fade Stagger */}
             <motion.div
-              variants={fluidFadeUp}
+              variants={keynoteContainer}
               initial="hidden"
               whileInView="visible"
-              viewport={{ once: false, amount: 0.2 }}
+              viewport={{ once: true }}
               className="lg:col-span-7 text-left space-y-6"
             >
-              {/* Badge Píldora Superior */}
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-950/70 border border-cyan-400/30 text-cyan-300 text-xs font-mono font-bold tracking-wider uppercase shadow-[0_0_15px_rgba(0,210,255,0.2)]">
-                <span>TECNOLOGÍA PARA UNA DEMOCRACIA MÁS FUERTE</span>
-              </div>
+              <motion.div variants={keynoteItem}>
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.04] backdrop-blur-xl border border-blue-400/30 text-blue-400 text-xs font-mono font-bold tracking-wider uppercase shadow-[inset_0_1px_0_0_rgba(255,255,255,0.1),0_0_20px_rgba(37,99,235,0.25)]">
+                  <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
+                  <span>Sistema de gestión electoral — Colombia 2026</span>
+                </div>
+              </motion.div>
 
-              {/* H1 de Gran Escala con acento cian */}
-              <h1 className="text-4xl sm:text-5xl lg:text-5.5xl xl:text-6xl font-black tracking-tight text-white leading-[1.08] text-balance">
-                Tu aliado en cada{' '}
-                <span className="text-[#00D2FF] drop-shadow-[0_0_25px_rgba(0,210,255,0.4)]">
+              <motion.h1
+                variants={keynoteItem}
+                className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white leading-[1.08] text-balance"
+              >
+                Gestión integral del{' '}
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-sky-300 to-indigo-300">
                   proceso electoral
                 </span>
-              </h1>
+              </motion.h1>
 
-              {/* Párrafo descriptivo fiel */}
-              <p className="text-base sm:text-lg text-slate-300 leading-relaxed max-w-xl">
-                Plataforma tecnológica diseñada para gestionar, controlar y hacer seguimiento a todas las etapas del proceso electoral en Colombia. Transparencia, seguridad y eficiencia en un solo lugar.
-              </p>
+              <motion.p
+                variants={keynoteItem}
+                className="text-base sm:text-lg text-zinc-300 leading-relaxed max-w-xl"
+              >
+                Plataforma tecnológica diseñada para estructurar, auditar y dar seguimiento a todas las etapas de la campaña en Colombia. Integración con censo oficial de la Registraduría y DIVIPOLE nacional.
+              </motion.p>
 
-              {/* Fila de Botones */}
-              <div className="flex flex-col sm:flex-row items-center gap-3.5 pt-2">
-                <button
+              {/* Botones de Acción con respuesta magnética ProMotion */}
+              <motion.div
+                variants={keynoteItem}
+                className="flex flex-col sm:flex-row items-center gap-3.5 pt-2"
+              >
+                <motion.button
                   type="button"
+                  whileHover="hover"
+                  whileTap={{ scale: 0.96 }}
+                  transition={appleSpring}
                   onClick={onNavigateToLogin}
-                  className="w-full sm:w-auto px-7 py-3.5 rounded-full bg-[#155EEF] hover:bg-blue-500 active:scale-[0.98] text-white text-sm font-bold tracking-wide transition-all shadow-xl shadow-blue-600/40 hover:shadow-blue-500/60 cursor-pointer flex items-center justify-center gap-2 border border-blue-400/40"
+                  className="w-full sm:w-auto px-7 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold tracking-wide transition-colors shadow-xl shadow-blue-600/35 cursor-pointer flex items-center justify-center gap-2 border border-blue-400/40 will-change-transform"
                 >
-                  <span>Comenzar ahora</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
+                  <span>Acceder al sistema</span>
+                  <motion.span
+                    variants={{
+                      hover: { x: 4 },
+                    }}
+                    transition={appleSpring}
+                    className="inline-block"
+                  >
+                    <ArrowRight className="w-4 h-4" />
+                  </motion.span>
+                </motion.button>
 
-                <a
-                  href="#caracteristicas"
-                  className="w-full sm:w-auto px-7 py-3.5 rounded-full bg-[#0E172E]/90 hover:bg-[#152345] border border-slate-700 text-slate-200 text-sm font-semibold transition-all flex items-center justify-center cursor-pointer shadow-sm"
+                <motion.a
+                  href="#cobertura"
+                  whileHover={{ scale: 1.015 }}
+                  whileTap={{ scale: 0.96 }}
+                  transition={appleSpring}
+                  className="w-full sm:w-auto px-7 py-3.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] backdrop-blur-xl border border-white/[0.1] text-zinc-200 text-sm font-semibold transition-colors flex items-center justify-center cursor-pointer shadow-[inset_0_1px_0_0_rgba(255,255,255,0.1)] will-change-transform"
                 >
-                  <span>Conoce más</span>
-                </a>
-              </div>
+                  <span>Explorar corporaciones</span>
+                </motion.a>
+              </motion.div>
 
-              {/* Badges de Confianza Horizontales */}
-              <div className="pt-4 flex flex-wrap items-center gap-5 text-xs text-slate-300 font-medium">
-                <div className="flex items-center gap-1.5 text-slate-200">
-                  <Check className="w-4 h-4 text-cyan-400" />
-                  <span>Seguro y confiable</span>
+              <motion.div
+                variants={keynoteItem}
+                className="pt-4 flex flex-wrap items-center gap-5 text-xs text-zinc-400 font-medium"
+              >
+                <div className="flex items-center gap-1.5 text-zinc-300">
+                  <Check className="w-4 h-4 text-emerald-400" />
+                  <span>Seguridad y trazabilidad criptográfica</span>
                 </div>
-                <div className="flex items-center gap-1.5 text-slate-200">
+                <div className="flex items-center gap-1.5 text-zinc-300">
                   <Cloud className="w-4 h-4 text-blue-400" />
-                  <span>100% en la nube</span>
+                  <span>Despliegue distribuido de alta disponibilidad</span>
                 </div>
-                <div className="flex items-center gap-1.5 text-slate-200">
-                  <Headphones className="w-4 h-4 text-emerald-400" />
-                  <span>Soporte 24/7</span>
-                </div>
-              </div>
+              </motion.div>
             </motion.div>
 
-            {/* Columna Derecha: Panel de Métricas Electorales (Grid 2x2) */}
+            {/* Tarjeta HUD Métrica Lateral con Conteo Progresivo Apple */}
             <motion.div
-              variants={fluidFadeUp}
+              variants={keynoteContainer}
               initial="hidden"
               whileInView="visible"
-              viewport={{ once: false, amount: 0.2 }}
-              className="lg:col-span-5 grid grid-cols-1 sm:grid-cols-2 gap-4 w-full"
+              viewport={{ once: true }}
+              className="lg:col-span-5 grid grid-cols-2 gap-3.5 w-full"
             >
-              {/* Tarjeta 1: Departamentos */}
-              <div className="p-5 rounded-2xl bg-[#081226]/85 backdrop-blur-xl border border-sky-400/25 hover:border-cyan-400/60 hover:shadow-[0_0_25px_rgba(0,210,255,0.2)] transition-all duration-300 flex flex-col justify-between shadow-xl group">
-                <div className="w-12 h-12 rounded-xl bg-[#051129] border border-cyan-400/50 flex items-center justify-center text-cyan-400 shadow-[0_0_15px_rgba(0,210,255,0.3)] shrink-0 group-hover:scale-105 transition-transform mb-4">
-                  <Shield className="w-6 h-6" strokeWidth={2.2} />
-                </div>
-                <div>
-                  <span className="text-3xl font-black font-mono text-white tracking-tight leading-none block">
-                    32
+              {[
+                { rawNumber: 32, label: 'Departamentos', sub: 'Cobertura 100% oficial' },
+                { rawNumber: 1102, label: 'Municipios', sub: 'Concejos y alcaldías' },
+                { rawNumber: 12000, prefix: '+', label: 'Puestos Votación', sub: 'DIVIPOLE 2026' },
+                { rawNumber: 39, suffix: 'M+', prefix: '+', label: 'Censo Habilitado', sub: 'Registraduría Nacional' },
+              ].map((metric) => (
+                <motion.div
+                  key={metric.label}
+                  variants={keynoteItem}
+                  whileHover={{ scale: 1.02, y: -2 }}
+                  transition={appleSoftSpring}
+                  className="p-5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.06] backdrop-blur-2xl border border-white/[0.08] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.12),0_8px_24px_rgba(0,0,0,0.35)] transition-[border-color,background-color] flex flex-col justify-between cursor-default will-change-transform"
+                >
+                  <span className="text-2xl sm:text-3xl font-black font-mono tabular-nums text-white tracking-tight">
+                    <AnimatedCounter
+                      value={metric.rawNumber}
+                      prefix={metric.prefix || ''}
+                      suffix={metric.suffix || ''}
+                    />
                   </span>
-                  <span className="text-sm text-slate-300 font-semibold block mt-1.5">Departamentos</span>
-                </div>
-              </div>
-
-              {/* Tarjeta 2: Municipios */}
-              <div className="p-5 rounded-2xl bg-[#081226]/85 backdrop-blur-xl border border-sky-400/25 hover:border-cyan-400/60 hover:shadow-[0_0_25px_rgba(0,210,255,0.2)] transition-all duration-300 flex flex-col justify-between shadow-xl group">
-                <div className="w-12 h-12 rounded-xl bg-[#051129] border border-cyan-400/50 flex items-center justify-center text-cyan-400 shadow-[0_0_15px_rgba(0,210,255,0.3)] shrink-0 group-hover:scale-105 transition-transform mb-4">
-                  <MapPin className="w-6 h-6" strokeWidth={2.2} />
-                </div>
-                <div>
-                  <span className="text-3xl font-black font-mono text-white tracking-tight leading-none block">
-                    +1.102
-                  </span>
-                  <span className="text-sm text-slate-300 font-semibold block mt-1.5">Municipios</span>
-                </div>
-              </div>
-
-              {/* Tarjeta 3: Puestos de Votación */}
-              <div className="p-5 rounded-2xl bg-[#081226]/85 backdrop-blur-xl border border-sky-400/25 hover:border-cyan-400/60 hover:shadow-[0_0_25px_rgba(0,210,255,0.2)] transition-all duration-300 flex flex-col justify-between shadow-xl group">
-                <div className="w-12 h-12 rounded-xl bg-[#051129] border border-cyan-400/50 flex items-center justify-center text-cyan-400 shadow-[0_0_15px_rgba(0,210,255,0.3)] shrink-0 group-hover:scale-105 transition-transform mb-4">
-                  <Vote className="w-6 h-6" strokeWidth={2.2} />
-                </div>
-                <div>
-                  <span className="text-3xl font-black font-mono text-white tracking-tight leading-none block">
-                    +12.000
-                  </span>
-                  <span className="text-sm text-slate-300 font-semibold block mt-1.5">Puestos de votación</span>
-                </div>
-              </div>
-
-              {/* Tarjeta 4: Ciudadanos Habilitados */}
-              <div className="p-5 rounded-2xl bg-[#081226]/85 backdrop-blur-xl border border-sky-400/25 hover:border-cyan-400/60 hover:shadow-[0_0_25px_rgba(0,210,255,0.2)] transition-all duration-300 flex flex-col justify-between shadow-xl group">
-                <div className="w-12 h-12 rounded-xl bg-[#051129] border border-cyan-400/50 flex items-center justify-center text-cyan-400 shadow-[0_0_15px_rgba(0,210,255,0.3)] shrink-0 group-hover:scale-105 transition-transform mb-4">
-                  <Users className="w-6 h-6" strokeWidth={2.2} />
-                </div>
-                <div>
-                  <span className="text-2xl sm:text-3xl font-black font-mono text-white tracking-tight leading-none block">
-                    +39.000.000
-                  </span>
-                  <span className="text-sm text-slate-300 font-semibold block mt-1.5">Ciudadanos habilitados</span>
-                </div>
-              </div>
+                  <div className="mt-2">
+                    <span className="text-xs font-bold text-zinc-200 block">{metric.label}</span>
+                    <span className="text-[11px] text-zinc-400 block mt-0.5">{metric.sub}</span>
+                  </div>
+                </motion.div>
+              ))}
             </motion.div>
           </div>
-        </section>
+        </motion.section>
 
         {/* =========================================================================
-            C. SECCIÓN DE CARACTERÍSTICAS (GRID DE 6 TARJETAS EXACTAS)
+            3. FUNCIONALIDADES DEL SISTEMA CON STAGGER KEYNOTE
             ========================================================================= */}
-        <section id="caracteristicas" className="scroll-mt-20 py-20 sm:py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-slate-800/80">
+        <section id="caracteristicas" className="scroll-mt-24 py-16 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-white/[0.08]">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-            {/* Encabezado Lateral */}
             <motion.div
-              variants={fluidFadeUp}
+              variants={keynoteContainer}
               initial="hidden"
               whileInView="visible"
-              viewport={{ once: false, amount: 0.2 }}
+              viewport={{ once: true, margin: '-60px' }}
               className="lg:col-span-4 text-left space-y-4"
             >
-              <span className="text-xs font-mono font-bold uppercase tracking-wider text-cyan-400 block">
-                CARACTERÍSTICAS PRINCIPALES
-              </span>
-
-              <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white leading-tight">
-                Todo lo que necesitas en una sola plataforma
-              </h2>
-
-              <p className="text-sm text-slate-300 leading-relaxed">
-                Herramientas diseñadas para hacer más fácil, transparente y eficiente todo el proceso electoral, desde la creación de campañas hasta el seguimiento en tiempo real.
-              </p>
-
-              <div className="pt-2">
-                <button
+              <motion.span variants={keynoteItem} className="text-xs font-mono font-bold uppercase tracking-wider text-blue-400 block">
+                MÓDULOS DE CONTROL
+              </motion.span>
+              <motion.h2 variants={keynoteItem} className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white leading-tight">
+                Funcionalidades del sistema
+              </motion.h2>
+              <motion.p variants={keynoteItem} className="text-sm text-zinc-300 leading-relaxed">
+                Módulos integrados para la gestión rigurosa del proceso electoral: registro de electores, georreferenciación territorial, asignación de coordinadores y auditoría en tiempo real.
+              </motion.p>
+              <motion.div variants={keynoteItem} className="pt-2">
+                <motion.button
                   type="button"
+                  whileHover="hover"
+                  whileTap={{ scale: 0.96 }}
+                  transition={appleSpring}
                   onClick={onNavigateToLogin}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#155EEF] hover:bg-blue-500 text-white text-xs sm:text-sm font-bold tracking-wide transition-all shadow-md shadow-blue-600/30 cursor-pointer"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs sm:text-sm font-bold tracking-wide shadow-md shadow-blue-600/30 cursor-pointer border border-blue-400/30 will-change-transform"
                 >
                   <span>Ver todas las funciones</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-              </div>
+                  <motion.span
+                    variants={{
+                      hover: { x: 4 },
+                    }}
+                    transition={appleSpring}
+                    className="inline-block"
+                  >
+                    <ArrowRight className="w-4 h-4" />
+                  </motion.span>
+                </motion.button>
+              </motion.div>
             </motion.div>
 
-            {/* Grid de 6 Tarjetas Tecnológicas (2 Filas x 3 Columnas) */}
-            <div className="lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 text-left">
-              {/* Tarjeta 1 */}
-              <motion.div
-                variants={fluidFadeUp}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: false, amount: 0.2 }}
-                className="p-6 rounded-2xl bg-[#0E172E] border border-cyan-500/20 hover:border-cyan-400/60 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_25px_rgba(0,210,255,0.15)] shadow-lg group"
-              >
-                <div className="w-12 h-12 rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-400/30 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
-                  <Users className="w-5.5 h-5.5" />
-                </div>
-                <h3 className="text-base font-bold text-white mb-2">Gestión de campañas</h3>
-                <p className="text-xs text-slate-400 leading-relaxed">
-                  Crea, administra y monitorea tus campañas electorales de forma sencilla y segura.
-                </p>
-              </motion.div>
-
-              {/* Tarjeta 2 */}
-              <motion.div
-                variants={fluidFadeUp}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: false, amount: 0.2 }}
-                className="p-6 rounded-2xl bg-[#0E172E] border border-cyan-500/20 hover:border-cyan-400/60 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_25px_rgba(0,210,255,0.15)] shadow-lg group"
-              >
-                <div className="w-12 h-12 rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-400/30 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
-                  <Building2 className="w-5.5 h-5.5" />
-                </div>
-                <h3 className="text-base font-bold text-white mb-2">Registro de candidatos</h3>
-                <p className="text-xs text-slate-400 leading-relaxed">
-                  Controla y valida la información de todos tus candidatos y sus equipos de trabajo.
-                </p>
-              </motion.div>
-
-              {/* Tarjeta 3 */}
-              <motion.div
-                variants={fluidFadeUp}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: false, amount: 0.2 }}
-                className="p-6 rounded-2xl bg-[#0E172E] border border-cyan-500/20 hover:border-cyan-400/60 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_25px_rgba(0,210,255,0.15)] shadow-lg group"
-              >
-                <div className="w-12 h-12 rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-400/30 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
-                  <BarChart3 className="w-5.5 h-5.5" />
-                </div>
-                <h3 className="text-base font-bold text-white mb-2">Información electoral oficial</h3>
-                <p className="text-xs text-slate-400 leading-relaxed">
-                  Datos actualizados de la Registraduría Nacional del Estado Civil y mapas electorales por territorio.
-                </p>
-              </motion.div>
-
-              {/* Tarjeta 4 */}
-              <motion.div
-                variants={fluidFadeUp}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: false, amount: 0.2 }}
-                className="p-6 rounded-2xl bg-[#0E172E] border border-cyan-500/20 hover:border-cyan-400/60 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_25px_rgba(0,210,255,0.15)] shadow-lg group"
-              >
-                <div className="w-12 h-12 rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-400/30 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
-                  <ShieldCheck className="w-5.5 h-5.5" />
-                </div>
-                <h3 className="text-base font-bold text-white mb-2">Seguridad avanzada</h3>
-                <p className="text-xs text-slate-400 leading-relaxed">
-                  Protección de datos, encriptación y autenticación de alto nivel.
-                </p>
-              </motion.div>
-
-              {/* Tarjeta 5 */}
-              <motion.div
-                variants={fluidFadeUp}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: false, amount: 0.2 }}
-                className="p-6 rounded-2xl bg-[#0E172E] border border-cyan-500/20 hover:border-cyan-400/60 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_25px_rgba(0,210,255,0.15)] shadow-lg group"
-              >
-                <div className="w-12 h-12 rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-400/30 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
-                  <Cloud className="w-5.5 h-5.5" />
-                </div>
-                <h3 className="text-base font-bold text-white mb-2">Acceso en tiempo real</h3>
-                <p className="text-xs text-slate-400 leading-relaxed">
-                  Consulta resultados, estadísticas y reportes desde cualquier dispositivo.
-                </p>
-              </motion.div>
-
-              {/* Tarjeta 6 */}
-              <motion.div
-                variants={fluidFadeUp}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: false, amount: 0.2 }}
-                className="p-6 rounded-2xl bg-[#0E172E] border border-cyan-500/20 hover:border-cyan-400/60 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_25px_rgba(0,210,255,0.15)] shadow-lg group"
-              >
-                <div className="w-12 h-12 rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-400/30 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
-                  <Headphones className="w-5.5 h-5.5" />
-                </div>
-                <h3 className="text-base font-bold text-white mb-2">Soporte especializado</h3>
-                <p className="text-xs text-slate-400 leading-relaxed">
-                  Un equipo siempre disponible para acompañarte en todo el proceso.
-                </p>
-              </motion.div>
-            </div>
-          </div>
-        </section>
-
-        {/* =========================================================================
-            D. SECCIÓN DE IMPACTO Y DATOS ESTADÍSTICOS (DATA HUD + BLUEPRINT)
-            ========================================================================= */}
-        <section
-          id="seguridad"
-          className="scroll-mt-20 py-20 sm:py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-slate-800/80 relative overflow-hidden bg-[radial-gradient(ellipse_80%_80%_at_50%_-10%,rgba(14,165,233,0.15),transparent)]"
-        >
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-            {/* Encabezado Lateral */}
+            {/* Grid 6 Módulos con Parallax Hover & Micro-Física */}
             <motion.div
-              variants={fluidFadeUp}
+              variants={keynoteContainer}
               initial="hidden"
               whileInView="visible"
-              viewport={{ once: false, amount: 0.2 }}
-              className="lg:col-span-4 text-left space-y-4"
+              viewport={{ once: true, margin: '-60px' }}
+              className="lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-left"
             >
-              <span className="text-xs font-mono font-bold uppercase tracking-wider text-cyan-400 block">
-                NUESTRO IMPACTO
-              </span>
-
-              <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white leading-tight">
-                Datos que respaldan nuestra gestión
-              </h2>
-
-              <p className="text-sm text-slate-300 leading-relaxed">
-                La tecnología al servicio de la democracia. Estos son algunos de los resultados que nos motivan a seguir mejorando.
-              </p>
-
-              <div className="pt-2">
-                <button
-                  type="button"
-                  onClick={onNavigateToLogin}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#0E172E] hover:bg-[#152345] border border-cyan-500/30 text-slate-200 text-xs sm:text-sm font-semibold transition-all shadow-sm cursor-pointer"
+              {[
+                {
+                  icon: Users,
+                  title: 'Gestión de Campañas',
+                  desc: 'Administra y estructura campañas con roles operativos de alta fidelidad: Administradores, Coordinadores y Líderes.',
+                },
+                {
+                  icon: Building2,
+                  title: 'Padrón Electoral',
+                  desc: 'Control y auditoría unificada de simpatizantes con validación automática contra el censo nacional.',
+                },
+                {
+                  icon: BarChart3,
+                  title: 'Información Oficial',
+                  desc: 'Mapeo geoespacial de puestos y mesas con datos oficiales actualizados de la Registraduría.',
+                },
+                {
+                  icon: ShieldCheck,
+                  title: 'Seguridad y RBAC',
+                  desc: 'Aislamiento estricto por campaña (Multi-tenant), cifrado en tránsito y registros de auditoría inmutables.',
+                },
+                {
+                  icon: Cloud,
+                  title: 'Sincronización Cloud',
+                  desc: 'Capacidad operativa ininterrumpida y sincronización en tiempo real desde cualquier dispositivo.',
+                },
+                {
+                  icon: Headphones,
+                  title: 'Soporte y Auditoría',
+                  desc: 'Acompañamiento especializado en jornadas electorales con exportación técnica de reportes.',
+                },
+              ].map((item, idx) => (
+                <motion.div
+                  key={idx}
+                  variants={keynoteItem}
+                  whileHover={{ scale: 1.02, y: -3 }}
+                  transition={appleSoftSpring}
+                  className="p-5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.06] backdrop-blur-2xl border border-white/[0.08] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.1),0_8px_24px_rgba(0,0,0,0.3)] transition-[background-color,border-color] group cursor-default will-change-transform"
                 >
-                  <span>Ver estadísticas completas</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-              </div>
+                  <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/25 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-200">
+                    <item.icon className="w-5 h-5" />
+                  </div>
+                  <h3 className="text-sm font-bold text-white mb-1.5">{item.title}</h3>
+                  <p className="text-xs text-zinc-400 leading-relaxed">{item.desc}</p>
+                </motion.div>
+              ))}
             </motion.div>
-
-            {/* Grid de 6 Contadores Numéricos (2 Filas x 3 Columnas) */}
-            <div className="lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 text-left">
-              {/* Métrica 1 */}
-              <motion.div
-                variants={fluidFadeUp}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: false, amount: 0.2 }}
-                className="p-6 rounded-2xl bg-[#0D162B]/90 border border-slate-700/80 hover:border-cyan-400/50 hover:shadow-[0_0_20px_rgba(0,210,255,0.15)] transition-all shadow-lg group"
-              >
-                <div className="p-2.5 w-fit rounded-xl bg-blue-500/10 text-cyan-400 border border-cyan-400/20 mb-4 group-hover:scale-105 transition-transform">
-                  <Map className="w-5 h-5" />
-                </div>
-                <span className="text-3xl sm:text-4xl font-black font-mono text-white block tracking-tight">32</span>
-                <span className="text-xs text-[#94A3B8] font-medium mt-1.5 block">Departamentos</span>
-              </motion.div>
-
-              {/* Métrica 2 */}
-              <motion.div
-                variants={fluidFadeUp}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: false, amount: 0.2 }}
-                className="p-6 rounded-2xl bg-[#0D162B]/90 border border-slate-700/80 hover:border-cyan-400/50 hover:shadow-[0_0_20px_rgba(0,210,255,0.15)] transition-all shadow-lg group"
-              >
-                <div className="p-2.5 w-fit rounded-xl bg-blue-500/10 text-cyan-400 border border-cyan-400/20 mb-4 group-hover:scale-105 transition-transform">
-                  <Building2 className="w-5 h-5" />
-                </div>
-                <span className="text-3xl sm:text-4xl font-black font-mono text-white block tracking-tight">+1.102</span>
-                <span className="text-xs text-[#94A3B8] font-medium mt-1.5 block">Municipios</span>
-              </motion.div>
-
-              {/* Métrica 3 */}
-              <motion.div
-                variants={fluidFadeUp}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: false, amount: 0.2 }}
-                className="p-6 rounded-2xl bg-[#0D162B]/90 border border-slate-700/80 hover:border-cyan-400/50 hover:shadow-[0_0_20px_rgba(0,210,255,0.15)] transition-all shadow-lg group"
-              >
-                <div className="p-2.5 w-fit rounded-xl bg-blue-500/10 text-cyan-400 border border-cyan-400/20 mb-4 group-hover:scale-105 transition-transform">
-                  <Radio className="w-5 h-5" />
-                </div>
-                <span className="text-3xl sm:text-4xl font-black font-mono text-white block tracking-tight">1.102</span>
-                <span className="text-xs text-[#94A3B8] font-medium mt-1.5 block">Zonas electorales</span>
-              </motion.div>
-
-              {/* Métrica 4 */}
-              <motion.div
-                variants={fluidFadeUp}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: false, amount: 0.2 }}
-                className="p-6 rounded-2xl bg-[#0D162B]/90 border border-slate-700/80 hover:border-cyan-400/50 hover:shadow-[0_0_20px_rgba(0,210,255,0.15)] transition-all shadow-lg group"
-              >
-                <div className="p-2.5 w-fit rounded-xl bg-blue-500/10 text-cyan-400 border border-cyan-400/20 mb-4 group-hover:scale-105 transition-transform">
-                  <Building className="w-5 h-5" />
-                </div>
-                <span className="text-3xl sm:text-4xl font-black font-mono text-white block tracking-tight">+12.000</span>
-                <span className="text-xs text-[#94A3B8] font-medium mt-1.5 block">Puestos de votación</span>
-              </motion.div>
-
-              {/* Métrica 5 */}
-              <motion.div
-                variants={fluidFadeUp}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: false, amount: 0.2 }}
-                className="p-6 rounded-2xl bg-[#0D162B]/90 border border-slate-700/80 hover:border-cyan-400/50 hover:shadow-[0_0_20px_rgba(0,210,255,0.15)] transition-all shadow-lg group"
-              >
-                <div className="p-2.5 w-fit rounded-xl bg-blue-500/10 text-cyan-400 border border-cyan-400/20 mb-4 group-hover:scale-105 transition-transform">
-                  <Vote className="w-5 h-5" />
-                </div>
-                <span className="text-3xl sm:text-4xl font-black font-mono text-white block tracking-tight">+106.000</span>
-                <span className="text-xs text-[#94A3B8] font-medium mt-1.5 block">Mesas de votación</span>
-              </motion.div>
-
-              {/* Métrica 6 */}
-              <motion.div
-                variants={fluidFadeUp}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: false, amount: 0.2 }}
-                className="p-6 rounded-2xl bg-[#0D162B]/90 border border-slate-700/80 hover:border-cyan-400/50 hover:shadow-[0_0_20px_rgba(0,210,255,0.15)] transition-all shadow-lg group"
-              >
-                <div className="p-2.5 w-fit rounded-xl bg-blue-500/10 text-cyan-400 border border-cyan-400/20 mb-4 group-hover:scale-105 transition-transform">
-                  <Users className="w-5 h-5" />
-                </div>
-                <span className="text-3xl sm:text-4xl font-black font-mono text-white block tracking-tight">+39.000.000</span>
-                <span className="text-xs text-[#94A3B8] font-medium mt-1.5 block">Ciudadanos habilitados</span>
-              </motion.div>
-            </div>
-          </div>
-
-          {/* Horizonte Iluminado Curvo de la Tierra en el Fondo */}
-          <div className="mt-16 w-full h-36 relative overflow-hidden pointer-events-none rounded-b-3xl">
-            <div className="absolute inset-0 bg-gradient-to-t from-blue-600/20 via-transparent to-transparent" />
-            <div className="absolute -bottom-24 left-1/2 -translate-x-1/2 w-[140%] h-[160px] rounded-[100%] border-t border-cyan-400/50 shadow-[0_-15px_40px_rgba(0,210,255,0.3)] bg-gradient-to-b from-[#0F1E3D] to-transparent" />
           </div>
         </section>
 
         {/* =========================================================================
-            E. SECCIÓN DE COBERTURA NACIONAL (CONTRASTE CLARO #F8FAFC)
+            4. SECCIÓN COBERTURA: BENTO GRID INTERACTIVO CON EXPANSIÓN FÍSICA APPLE
             ========================================================================= */}
         <section
           id="cobertura"
-          className="scroll-mt-20 py-20 sm:py-28 px-4 sm:px-6 lg:px-8 bg-[#F8FAFC] text-slate-900 transition-colors"
+          className="scroll-mt-24 py-16 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-white/[0.08]"
         >
-          <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-              {/* Columna Izquierda: Información Oficial */}
-              <motion.div
-                variants={fluidFadeUp}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: false, amount: 0.2 }}
-                className="lg:col-span-7 text-left space-y-6"
-              >
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-mono font-bold uppercase tracking-wider">
-                  <span>COBERTURA NACIONAL</span>
-                </div>
+          {/* Encabezado Keynote */}
+          <motion.div
+            variants={keynoteContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-60px' }}
+            className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10 text-left"
+          >
+            <div>
+              <motion.span variants={keynoteItem} className="text-xs font-mono font-bold uppercase tracking-wider text-blue-400 block">
+                ARQUITECTURA INSTITUCIONAL
+              </motion.span>
+              <motion.h2 variants={keynoteItem} className="text-2xl sm:text-4xl font-extrabold tracking-tight text-white mt-1">
+                Estructura y Niveles Electorales
+              </motion.h2>
+              <motion.p variants={keynoteItem} className="text-sm text-zinc-400 mt-1 max-w-2xl">
+                Selecciona una corporación para inspeccionar su alcance territorial, distribución de curules y parámetros técnicos del censo 2026.
+              </motion.p>
+            </div>
+            <motion.div variants={keynoteItem} className="flex items-center gap-2">
+              <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-500/10 backdrop-blur-xl border border-emerald-500/25 text-emerald-400 text-xs font-mono font-semibold tabular-nums shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)]">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                32 Departamentos Activos
+              </span>
+            </motion.div>
+          </motion.div>
 
-                <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 leading-tight">
-                  Información electoral para todo el país
-                </h2>
+          {/* Bento Grid Principal Asimétrico con Shared Layout Animations */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            {/* Columna Izquierda (5/12): 4 Selectores Bento con Micro-Zoom Apple */}
+            <div className="lg:col-span-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3">
+              {CORPORATIONS.map((corp) => {
+                const isSelected = selectedCorpId === corp.id;
+                const IconComponent = corp.icon;
 
-                <p className="text-base text-slate-600 leading-relaxed max-w-xl">
-                  Accede a los datos oficiales de la Registraduría Nacional del Estado Civil y del censo electoral, con cobertura integral en los 32 departamentos y Bogotá D.C., abarcando la gestión de cargos departamentales y municipales.
-                </p>
-
-                {/* 4 Botones de Categorías */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
-                  <div className="p-4 rounded-xl bg-white border border-slate-200/90 shadow-sm hover:shadow-md hover:border-blue-400 transition-all flex flex-col items-center gap-2 text-center">
-                    <span className="p-2 rounded-lg bg-amber-500/10 text-amber-600">
-                      <Map className="w-5 h-5" />
-                    </span>
-                    <span className="text-xs font-bold text-slate-800">Gobernación</span>
-                  </div>
-
-                  <div className="p-4 rounded-xl bg-white border border-slate-200/90 shadow-sm hover:shadow-md hover:border-blue-400 transition-all flex flex-col items-center gap-2 text-center">
-                    <span className="p-2 rounded-lg bg-emerald-500/10 text-emerald-600">
-                      <Landmark className="w-5 h-5" />
-                    </span>
-                    <span className="text-xs font-bold text-slate-800">Asamblea</span>
-                  </div>
-
-                  <div className="p-4 rounded-xl bg-white border border-slate-200/90 shadow-sm hover:shadow-md hover:border-blue-400 transition-all flex flex-col items-center gap-2 text-center">
-                    <span className="p-2 rounded-lg bg-rose-500/10 text-rose-600">
-                      <Building2 className="w-5 h-5" />
-                    </span>
-                    <span className="text-xs font-bold text-slate-800">Alcaldía</span>
-                  </div>
-
-                  <div className="p-4 rounded-xl bg-white border border-slate-200/90 shadow-sm hover:shadow-md hover:border-blue-400 transition-all flex flex-col items-center gap-2 text-center">
-                    <span className="p-2 rounded-lg bg-blue-500/10 text-blue-600">
-                      <Users className="w-5 h-5" />
-                    </span>
-                    <span className="text-xs font-bold text-slate-800">Concejo</span>
-                  </div>
-                </div>
-              </motion.div>
-
-              {/* Columna Derecha: Tarjeta Estructurada de Niveles de Elección */}
-              <motion.div
-                variants={fluidFadeUp}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: false, amount: 0.2 }}
-                className="lg:col-span-5 flex justify-center"
-              >
-                <div className="w-full max-w-md rounded-2xl bg-white border border-slate-200 shadow-xl p-6 text-left space-y-4">
-                  <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-                    <div>
-                      <span className="text-xs font-bold text-slate-400 uppercase tracking-wider font-mono">
-                        ESTRUCTURA ELECTORAL
-                      </span>
-                      <h3 className="text-base font-bold text-slate-900">Niveles Territoriales</h3>
-                    </div>
-                    <span className="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-600 text-xs font-bold">
-                      32 Departamentos
-                    </span>
-                  </div>
-
-                  <div className="space-y-2.5">
-                    <div className="p-3 rounded-xl bg-slate-50 border border-slate-100 hover:border-slate-300 transition-colors flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <span className="p-2 rounded-lg bg-amber-500/10 text-amber-600">
-                          <Map className="w-4 h-4" />
-                        </span>
-                        <div>
-                          <div className="text-xs font-bold text-slate-900">Gobernaciones</div>
-                          <div className="text-[11px] text-slate-500">Poder ejecutivo departamental</div>
+                return (
+                  <motion.button
+                    key={corp.id}
+                    layoutId={`corp-button-${corp.id}`}
+                    type="button"
+                    onClick={() => setSelectedCorpId(corp.id)}
+                    whileHover={{ scale: 1.015 }}
+                    whileTap={{ scale: 0.98 }}
+                    transition={appleSpring}
+                    className={`group w-full p-4 rounded-2xl text-left cursor-pointer border relative backdrop-blur-2xl will-change-transform ${
+                      isSelected
+                        ? 'bg-white/[0.08] border-blue-500/60 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.2),0_8px_32px_rgba(37,99,235,0.25)] ring-1 ring-blue-500/40'
+                        : 'bg-white/[0.03] hover:bg-white/[0.06] border-white/[0.08] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.1)]'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3.5 min-w-0">
+                        <div
+                          className={`w-11 h-11 rounded-xl flex items-center justify-center border shrink-0 transition-transform duration-200 group-hover:scale-105 ${corp.bgLight} ${corp.color}`}
+                        >
+                          <IconComponent className="w-5 h-5" strokeWidth={2} />
+                        </div>
+                        <div className="min-w-0">
+                          <div className="text-sm font-bold text-white tracking-tight flex items-center gap-2">
+                            <span>{corp.name}</span>
+                            {isSelected && (
+                              <motion.span
+                                layoutId="active-dot"
+                                transition={appleSpring}
+                                className="w-1.5 h-1.5 rounded-full bg-blue-400"
+                              />
+                            )}
+                          </div>
+                          <div className="text-[11px] text-zinc-400 font-medium truncate mt-0.5">
+                            {corp.scope}
+                          </div>
                         </div>
                       </div>
-                      <ChevronRight className="w-4 h-4 text-slate-400" />
+
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span className="hidden sm:inline-block text-[10px] font-mono font-medium px-2 py-0.5 rounded-md bg-white/[0.05] text-zinc-300 border border-white/[0.08] tabular-nums">
+                          {corp.tag}
+                        </span>
+                        <ChevronRight
+                          className={`w-4 h-4 text-zinc-500 transition-transform duration-150 ease-out ${
+                            isSelected ? 'text-blue-400 translate-x-1' : 'group-hover:translate-x-1 group-hover:text-zinc-300'
+                          }`}
+                        />
+                      </div>
+                    </div>
+                  </motion.button>
+                );
+              })}
+            </div>
+
+            {/* Columna Derecha (7/12): Visor Detallado con Transición de Resorte Apple */}
+            <div className="lg:col-span-7">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={selectedCorp.id}
+                  initial={{ opacity: 0, scale: 0.96, y: 14 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.97, y: -10 }}
+                  transition={appleSpring}
+                  className="p-6 sm:p-8 rounded-2xl bg-white/[0.03] backdrop-blur-2xl border border-white/[0.08] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.12),0_16px_40px_rgba(0,0,0,0.4)] text-left will-change-transform"
+                >
+                  {/* Cabecera del Panel */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-6 border-b border-white/[0.08]">
+                    <div className="flex items-center gap-3">
+                      <div className={`p-2.5 rounded-xl border ${selectedCorp.bgLight} ${selectedCorp.color}`}>
+                        <selectedCorp.icon className="w-6 h-6" strokeWidth={2} />
+                      </div>
+                      <div>
+                        <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-blue-400">
+                          {selectedCorp.scope}
+                        </span>
+                        <h3 className="text-xl sm:text-2xl font-black text-white">
+                          {selectedCorp.name}
+                        </h3>
+                      </div>
                     </div>
 
-                    <div className="p-3 rounded-xl bg-slate-50 border border-slate-100 hover:border-slate-300 transition-colors flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <span className="p-2 rounded-lg bg-emerald-500/10 text-emerald-600">
-                          <Landmark className="w-4 h-4" />
-                        </span>
-                        <div>
-                          <div className="text-xs font-bold text-slate-900">Asambleas Departamentales</div>
-                          <div className="text-[11px] text-slate-500">Corporaciones públicas regionales</div>
-                        </div>
-                      </div>
-                      <ChevronRight className="w-4 h-4 text-slate-400" />
-                    </div>
-
-                    <div className="p-3 rounded-xl bg-slate-50 border border-slate-100 hover:border-slate-300 transition-colors flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <span className="p-2 rounded-lg bg-rose-500/10 text-rose-600">
-                          <Building2 className="w-4 h-4" />
-                        </span>
-                        <div>
-                          <div className="text-xs font-bold text-slate-900">Alcaldías Municipales</div>
-                          <div className="text-[11px] text-slate-500">1.102 municipios y distritos</div>
-                        </div>
-                      </div>
-                      <ChevronRight className="w-4 h-4 text-slate-400" />
-                    </div>
-
-                    <div className="p-3 rounded-xl bg-slate-50 border border-slate-100 hover:border-slate-300 transition-colors flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <span className="p-2 rounded-lg bg-blue-500/10 text-blue-600">
-                          <Users className="w-4 h-4" />
-                        </span>
-                        <div>
-                          <div className="text-xs font-bold text-slate-900">Concejos Municipales</div>
-                          <div className="text-[11px] text-slate-500">Representación local y comunitaria</div>
-                        </div>
-                      </div>
-                      <ChevronRight className="w-4 h-4 text-slate-400" />
-                    </div>
+                    <span className="self-start sm:self-center px-3.5 py-1 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 text-xs font-mono font-semibold tabular-nums shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)]">
+                      {selectedCorp.tag}
+                    </span>
                   </div>
-                </div>
-              </motion.div>
+
+                  {/* Resumen */}
+                  <p className="text-sm text-zinc-300 leading-relaxed mt-5">
+                    {selectedCorp.summary}
+                  </p>
+
+                  {/* Grid de 4 Métricas Técnicas con Animación Suave */}
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6">
+                    {selectedCorp.metrics.map((m) => (
+                      <motion.div
+                        key={m.label}
+                        whileHover={{ scale: 1.02 }}
+                        transition={appleSoftSpring}
+                        className="p-3.5 rounded-xl bg-white/[0.04] backdrop-blur-xl border border-white/[0.08] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)] cursor-default will-change-transform"
+                      >
+                        <span className="text-[10px] font-mono text-zinc-400 uppercase block tracking-wider">
+                          {m.label}
+                        </span>
+                        <span className="text-base sm:text-lg font-bold font-mono text-white tabular-nums mt-1 block">
+                          {m.numValue ? (
+                            <AnimatedCounter value={m.numValue} />
+                          ) : (
+                            m.value
+                          )}
+                        </span>
+                      </motion.div>
+                    ))}
+                  </div>
+
+                  {/* Competencias Electorales */}
+                  <div className="mt-6 pt-5 border-t border-white/[0.08]">
+                    <span className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-400 block mb-3">
+                      Competencias y Alcance Operativo:
+                    </span>
+                    <ul className="space-y-2">
+                      {selectedCorp.responsibilities.map((r, i) => (
+                        <motion.li
+                          key={i}
+                          initial={{ opacity: 0, x: -6 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: i * 0.04, ...appleSpring }}
+                          className="flex items-start gap-2.5 text-xs text-zinc-300"
+                        >
+                          <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                          <span>{r}</span>
+                        </motion.li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {/* Botón de Acción Directa con Flecha Magnética */}
+                  <div className="mt-7 pt-5 border-t border-white/[0.08] flex flex-col sm:flex-row items-center justify-between gap-3">
+                    <span className="text-xs text-zinc-400">
+                      Gestione votantes, testigos y padrón para esta corporación:
+                    </span>
+                    <motion.button
+                      type="button"
+                      whileHover="hover"
+                      whileTap={{ scale: 0.96 }}
+                      transition={appleSpring}
+                      onClick={onNavigateToLogin}
+                      className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold shadow-md shadow-blue-600/35 cursor-pointer border border-blue-400/30 will-change-transform"
+                    >
+                      <span>Ingresar con esta corporación</span>
+                      <motion.span
+                        variants={{
+                          hover: { x: 4 },
+                        }}
+                        transition={appleSpring}
+                        className="inline-block"
+                      >
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </motion.span>
+                    </motion.button>
+                  </div>
+                </motion.div>
+              </AnimatePresence>
             </div>
           </div>
         </section>
 
         {/* =========================================================================
-            F. CALL TO ACTION FINAL (HERO FOOTER BANNER CIUDAD NOCTURNA)
+            5. SECCIÓN DE ACCESO RESTRINGIDO
             ========================================================================= */}
-        <section className="relative py-24 sm:py-32 px-4 sm:px-6 lg:px-8 text-center overflow-hidden bg-[#070B19] border-t border-slate-800/80">
-          {/* Fondo Panorámico Nocturno con Montañas y Luces */}
-          <div className="absolute inset-0 opacity-40 pointer-events-none -z-10">
-            {/* Silueta de Cordillera */}
-            <svg viewBox="0 0 1440 320" className="w-full h-full object-cover" preserveAspectRatio="none">
-              <path
-                fill="#0A142A"
-                d="M0,192L48,176C96,160,192,128,288,138.7C384,149,480,203,576,213.3C672,224,768,192,864,165.3C960,139,1056,117,1152,128C1248,139,1344,181,1392,202.7L1440,224L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
-              />
-            </svg>
-            <div className="absolute bottom-0 inset-x-0 h-28 bg-gradient-to-t from-[#070B19] to-transparent" />
-          </div>
-
+        <section id="seguridad" className="scroll-mt-24 py-20 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto text-center border-t border-white/[0.08]">
           <motion.div
-            variants={fluidFadeUp}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: false, amount: 0.2 }}
-            className="max-w-3xl mx-auto space-y-6 relative z-10"
+            initial={{ opacity: 0, y: 24, scale: 0.97 }}
+            whileInView={{ opacity: 1, y: 0, scale: 1 }}
+            viewport={{ once: true, margin: '-60px' }}
+            transition={appleSpring}
+            className="p-8 sm:p-12 rounded-3xl bg-white/[0.03] backdrop-blur-2xl border border-white/[0.08] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.12),0_20px_50px_rgba(0,0,0,0.45)] will-change-transform"
           >
-            <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
-              Sé parte del cambio
+            <div className="w-12 h-12 rounded-2xl bg-blue-600/10 border border-blue-500/30 text-blue-400 mx-auto flex items-center justify-center mb-5">
+              <Shield className="w-6 h-6" strokeWidth={2} />
+            </div>
+            <h2 className="text-2xl sm:text-4xl font-black text-white tracking-tight">
+              Acceso Institucional Restringido
             </h2>
-
-            <p className="text-sm sm:text-base text-slate-300 leading-relaxed max-w-xl mx-auto">
-              La democracia se construye con tecnología, información y personas como tú.
+            <p className="text-sm text-zinc-300 leading-relaxed max-w-xl mx-auto mt-3">
+              Esta plataforma es de uso exclusivo para equipos electorales registrados. Ingrese con sus credenciales autorizadas para acceder a los módulos de su corporación.
             </p>
-
-            <div className="pt-2 flex justify-center">
-              <button
+            <div className="mt-6 flex justify-center">
+              <motion.button
                 type="button"
+                whileHover="hover"
+                whileTap={{ scale: 0.96 }}
+                transition={appleSpring}
                 onClick={onNavigateToLogin}
-                className="px-8 py-3.5 rounded-full bg-[#155EEF] hover:bg-blue-500 active:scale-[0.98] text-white text-sm font-bold tracking-wide transition-all shadow-xl shadow-blue-600/40 hover:shadow-blue-500/60 cursor-pointer flex items-center gap-2.5 border border-blue-400/40"
+                className="px-8 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold tracking-wide transition-colors shadow-xl shadow-blue-600/35 cursor-pointer flex items-center gap-2 border border-blue-400/30 will-change-transform"
               >
-                <span>Comenzar ahora</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
+                <span>Acceder a la plataforma</span>
+                <motion.span
+                  variants={{
+                    hover: { x: 4 },
+                  }}
+                  transition={appleSpring}
+                  className="inline-block"
+                >
+                  <ArrowRight className="w-4 h-4" />
+                </motion.span>
+              </motion.button>
             </div>
           </motion.div>
         </section>
 
         {/* =========================================================================
-            SECCIÓN FAQ RÁPIDA PARA CUMPLIR NAVEGACIÓN
+            6. SECCIÓN PREGUNTAS FRECUENTES
             ========================================================================= */}
-        <section id="contacto" className="scroll-mt-20 py-16 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto border-t border-slate-800/80 text-left">
-          <div className="text-center mb-10 space-y-2">
-            <span className="text-xs font-mono font-bold uppercase tracking-wider text-cyan-400">
+        <section id="contacto" className="scroll-mt-24 py-16 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto border-t border-white/[0.08] text-left">
+          <div className="text-center mb-8 space-y-1">
+            <span className="text-xs font-mono font-bold uppercase tracking-wider text-blue-400">
               RESOLUCIÓN DE DUDAS
             </span>
             <h3 className="text-2xl sm:text-3xl font-extrabold text-white">
@@ -734,49 +921,68 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin }) =
             {[
               {
                 q: '¿Cómo garantiza la plataforma la transparencia electoral?',
-                a: 'El sistema integra los datos oficiales de censo y puestos DIVIPOLE con auditoría criptográfica, eliminando discrepancias y blindando el registro de simpatizantes con trazabilidad completa.',
+                a: 'El sistema integra los datos oficiales de censo y puestos DIVIPOLE con auditoría criptográfica, eliminando discrepancias y blindando el registro de simpatizantes con trazabilidad completa de cada modificación.',
               },
               {
-                q: '¿Es compatible con cualquier tipo de campaña (Alcaldía, Concejo, Gobernación)?',
-                a: 'Sí. La arquitectura modular permite configurar cualquier contienda municipal o departamental con asignación de metas automáticas.',
+                q: '¿Es compatible con cualquier tipo de campaña (Gobernación, Asamblea, Alcaldía, Concejo)?',
+                a: 'Sí. La arquitectura modular permite configurar cualquier contienda municipal o departamental con asignación de metas automáticas, georreferenciación de votantes y control de testigos.',
+              },
+              {
+                q: '¿Quién puede acceder al sistema?',
+                a: 'El acceso está restringido a personal acreditado por el director de campaña: Administradores Generales, Coordinadores de Zona y Líderes de Puesto.',
               },
             ].map((faq, idx) => (
-              <div key={faq.q} className="rounded-2xl bg-[#0D162B] border border-slate-700/60 overflow-hidden">
-                <button
+              <motion.div
+                key={faq.q}
+                layout
+                transition={appleSpring}
+                className="rounded-2xl bg-white/[0.03] backdrop-blur-2xl border border-white/[0.08] overflow-hidden shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)]"
+              >
+                <motion.button
                   type="button"
+                  whileTap={{ scale: 0.995 }}
                   onClick={() => toggleFaq(idx)}
-                  className="w-full px-5 py-4 text-left flex items-center justify-between font-bold text-sm text-white hover:text-cyan-400 transition-colors cursor-pointer"
+                  className="w-full px-5 py-4 text-left flex items-center justify-between font-bold text-sm text-white hover:text-blue-400 transition-colors cursor-pointer"
                 >
                   <span>{faq.q}</span>
-                  <ChevronRight
-                    className={`w-4 h-4 transition-transform duration-300 ${openFaq === idx ? 'rotate-90 text-cyan-400' : ''}`}
-                  />
-                </button>
-                {openFaq === idx && (
-                  <div className="px-5 pb-4 text-xs text-slate-400 leading-relaxed border-t border-slate-800 pt-3">
-                    {faq.a}
-                  </div>
-                )}
-              </div>
+                  <motion.div
+                    animate={{ rotate: openFaq === idx ? 90 : 0 }}
+                    transition={appleSpring}
+                  >
+                    <ChevronRight className="w-4 h-4 text-zinc-500" />
+                  </motion.div>
+                </motion.button>
+                <AnimatePresence initial={false}>
+                  {openFaq === idx && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={appleSpring}
+                      className="px-5 pb-4 text-xs text-zinc-400 leading-relaxed border-t border-white/[0.05] pt-3 overflow-hidden"
+                    >
+                      {faq.a}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
             ))}
           </div>
         </section>
       </main>
 
       {/* =========================================================================
-          G. PIE DE PÁGINA (DARK PRO FOOTER)
+          7. FOOTER TÉCNICO SOBRIO
           ========================================================================= */}
-      <footer className="border-t border-slate-800/80 bg-[#070B19] py-10 px-4 sm:px-6 lg:px-8 transition-colors">
+      <footer className="border-t border-white/[0.08] bg-[#05070D]/85 backdrop-blur-xl py-10 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto space-y-6">
-          {/* Fila Superior */}
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            {/* Logo */}
             <div className="flex items-center gap-2.5">
               <div className="h-8 w-8 rounded-lg bg-blue-600 flex items-center justify-center text-white">
                 <Shield className="w-4 h-4 text-white" strokeWidth={2.5} />
               </div>
               <div className="flex flex-col text-left">
-                <span className="text-[10px] font-mono tracking-widest text-slate-400 uppercase font-bold leading-none">
+                <span className="text-[10px] font-mono tracking-widest text-zinc-400 uppercase font-bold leading-none">
                   PLATAFORMA
                 </span>
                 <span className="text-base font-extrabold text-white leading-none mt-0.5">
@@ -785,72 +991,22 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin }) =
               </div>
             </div>
 
-            {/* Links */}
-            <div className="flex flex-wrap items-center gap-6 text-xs text-slate-400">
-              <a href="#inicio" className="hover:text-white transition-colors">
-                Inicio
-              </a>
-              <a href="#caracteristicas" className="hover:text-white transition-colors">
-                Características
-              </a>
-              <a href="#cobertura" className="hover:text-white transition-colors">
-                Cobertura
-              </a>
-              <a href="#seguridad" className="hover:text-white transition-colors">
-                Seguridad
-              </a>
-              <a href="#contacto" className="hover:text-white transition-colors">
-                Contacto
-              </a>
+            <div className="flex flex-wrap items-center gap-6 text-xs text-zinc-400 font-medium">
+              {NAV_LINKS.map((link) => (
+                <a key={link.id} href={link.href} className="hover:text-white transition-colors">
+                  {link.label}
+                </a>
+              ))}
             </div>
 
-            {/* Redes Sociales e Indicador Institucional */}
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-3 text-slate-400">
-                {/* Facebook */}
-                <a href="#inicio" className="hover:text-cyan-400 transition-colors" aria-label="Facebook">
-                  <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                    <path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" />
-                  </svg>
-                </a>
-                {/* X (Twitter) */}
-                <a href="#inicio" className="hover:text-cyan-400 transition-colors" aria-label="X">
-                  <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                  </svg>
-                </a>
-                {/* Instagram */}
-                <a href="#inicio" className="hover:text-cyan-400 transition-colors" aria-label="Instagram">
-                  <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
-                  </svg>
-                </a>
-                {/* YouTube */}
-                <a href="#inicio" className="hover:text-cyan-400 transition-colors" aria-label="YouTube">
-                  <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
-                  </svg>
-                </a>
-              </div>
-
-              <span className="text-[11px] text-slate-400 font-medium hidden sm:inline">
-                Tecnología que fortalece la democracia
-              </span>
-            </div>
+            <span className="text-[11px] text-zinc-500 font-mono">
+              Control Electoral — Versión Institucional 2026
+            </span>
           </div>
 
-          {/* Fila Inferior */}
-          <div className="pt-4 border-t border-slate-800/60 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-slate-500">
+          <div className="pt-4 border-t border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-zinc-500">
             <p>© 2026 Plataforma Electoral. Todos los derechos reservados.</p>
-            <div className="flex items-center gap-4">
-              <a href="#inicio" className="hover:text-slate-300 transition-colors">
-                Términos y condiciones
-              </a>
-              <span>|</span>
-              <a href="#inicio" className="hover:text-slate-300 transition-colors">
-                Política de privacidad
-              </a>
-            </div>
+            <p className="tabular-nums">Seguridad basada en roles (RBAC) • Cero rastros comerciales</p>
           </div>
         </div>
       </footer>

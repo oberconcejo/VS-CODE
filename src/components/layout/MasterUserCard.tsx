@@ -47,7 +47,7 @@ export const MasterUserCard: React.FC<MasterUserCardProps> = ({
             aria-label="Cerrar sesión de SuperAdmin"
           >
             {/* Avatar con gradiente amatista / índigo */}
-            <div className="h-full w-full rounded-xl bg-gradient-to-tr from-purple-700 via-indigo-600 to-violet-500 shadow-md ring-1 ring-white/10 flex items-center justify-center transition-transform group-hover:scale-105">
+            <div className="h-full w-full rounded-xl bg-[#141418] border border-white/[0.08] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)] flex items-center justify-center transition-transform duration-200 group-hover:scale-105">
               <span className="text-xs font-bold text-white tracking-wider">{initials}</span>
             </div>
 
@@ -74,10 +74,10 @@ export const MasterUserCard: React.FC<MasterUserCardProps> = ({
   // Modo expandido estándar (Executive Card)
   return (
     <>
-      <div className="w-full bg-white dark:bg-slate-900/70 border border-slate-200/90 dark:border-purple-900/30 rounded-2xl p-3 shadow-xs transition-all duration-200 flex items-center justify-between gap-2.5 group">
+      <div className="w-full bg-white dark:bg-[#141418] border border-slate-200/90 dark:border-white/[0.06] rounded-2xl p-3 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)] transition-[background-color,border-color] duration-200 flex items-center justify-between gap-2.5 group">
         {/* Avatar de SuperAdmin con Halo de Estado */}
         <div className="h-9.5 w-9.5 rounded-xl relative flex-shrink-0">
-          <div className="h-full w-full rounded-xl bg-gradient-to-tr from-purple-700 via-purple-600 to-indigo-600 shadow-md shadow-purple-600/20 ring-1 ring-white/10 flex items-center justify-center">
+          <div className="h-full w-full rounded-xl bg-[#141418] border border-white/[0.08] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)] flex items-center justify-center">
             <span className="text-xs font-bold text-white tracking-wider">{initials}</span>
           </div>
 

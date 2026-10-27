@@ -1,7 +1,8 @@
 import React, { useState, Suspense } from 'react';
-import { Menu, Loader2 } from 'lucide-react';
+import { Menu } from 'lucide-react';
 import { MasterSidebar, type MasterTab } from './MasterSidebar';
 import { ThemeToggle } from '../ui/ThemeToggle';
+import { ViewSkeletonFallback } from '../ui/ViewSkeletonFallback';
 import { AnimatePresence, motion } from 'framer-motion';
 
 const MasterDashboardView = React.lazy(() =>
@@ -37,14 +38,6 @@ interface MasterPlatformLayoutProps {
   userEmail?: string;
 }
 
-const ViewLoadingFallback: React.FC = () => (
-  <div className="w-full py-20 flex flex-col items-center justify-center text-slate-400">
-    <Loader2 className="w-7 h-7 animate-spin text-purple-500 mb-2.5" />
-    <span className="text-xs font-mono uppercase tracking-wider text-slate-500">
-      Cargando módulo...
-    </span>
-  </div>
-);
 
 export const MasterPlatformLayout: React.FC<MasterPlatformLayoutProps> = ({
   onSignOut,
@@ -131,7 +124,7 @@ export const MasterPlatformLayout: React.FC<MasterPlatformLayoutProps> = ({
               exit={{ opacity: 0, y: -6 }}
               transition={{ duration: 0.2, ease: 'easeOut' }}
             >
-              <Suspense fallback={<ViewLoadingFallback />}>
+              <Suspense fallback={<ViewSkeletonFallback />}>
                 {activeTab === 'overview' && (
                   <MasterDashboardView
                     onNavigateToTenants={() => setActiveTab('tenants')}
