@@ -16,6 +16,9 @@ export interface ElectorLookupResult {
   origen?: string;
 }
 
+const lookupCache = new Map<string, { result: ElectorLookupResult; timestamp: number }>();
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutos de caché para consultas repetidas
+
 export function useElectorSearch() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -26,6 +29,13 @@ export function useElectorSearch() {
     async (documento: string, tenantId?: string | null): Promise<ElectorLookupResult | null> => {
       const docLimpio = String(documento || '').replace(/\D/g, '').trim();
       if (docLimpio.length < 5) return null;
+
+      // Verificación rápida en caché en memoria (0ms latency para consultas recientes)
+      const cacheKey = `${docLimpio}_${tenantId || 'global'}`;
+      const cached = lookupCache.get(cacheKey);
+      if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
+        return cached.result;
+      }
 
       // 1. Limpiar cualquier temporizador previo para evitar fugas y abortos accidentales
       if (timeoutRef.current) {
@@ -181,18 +191,20 @@ export function useElectorSearch() {
 
         // Caso A: Duplicado en la campaña activa
         if (res && res.duplicado) {
-          return {
+          const dupRes: ElectorLookupResult = {
             nombres: res.data?.nombres || res.nombres || '',
             apellidos: res.data?.apellidos || res.apellidos || '',
             edad: '',
             duplicado: true,
             mensaje: res.mensaje || 'Elector ya registrado en esta campaña.',
           };
+          lookupCache.set(cacheKey, { result: dupRes, timestamp: Date.now() });
+          return dupRes;
         }
 
         // Caso B: Si no se encontró el documento en las fuentes oficiales
         if (!res || res.encontrado === false || res.ok === false) {
-          return {
+          const notFoundRes: ElectorLookupResult = {
             nombres: '',
             apellidos: '',
             edad: '',
@@ -200,6 +212,8 @@ export function useElectorSearch() {
             encontrado: false,
             mensaje: res?.mensaje || 'Persona no registrada o número de documento no encontrado en el censo oficial ni en RUI.',
           };
+          lookupCache.set(cacheKey, { result: notFoundRes, timestamp: Date.now() });
+          return notFoundRes;
         }
 
         const payloadData = res.data || res;
@@ -218,7 +232,7 @@ export function useElectorSearch() {
         }
 
         // Caso C: Documento verificado
-        return {
+        const okRes: ElectorLookupResult = {
           nombres: nombresVal,
           apellidos: apellidosVal,
           edad:
@@ -237,6 +251,8 @@ export function useElectorSearch() {
           origen: res.origen || payloadData?.origen || 'censo_nacional',
           mensaje: res.mensaje || '',
         };
+        lookupCache.set(cacheKey, { result: okRes, timestamp: Date.now() });
+        return okRes;
       } catch (err: any) {
         if (err.name === 'AbortError') {
           console.warn('[QA-Lookup] Petición cancelada o excedió el tiempo límite (Timeout).');

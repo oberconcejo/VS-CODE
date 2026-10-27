@@ -1,10 +1,23 @@
 import { useEffect, useState, useCallback } from 'react';
 import { supabase } from './lib/supabase';
 import type { Profile, ActiveSessionData } from './types';
-import { LoginPage } from './modules/auth/LoginPage';
-import { ResetPasswordView } from './modules/auth/ResetPasswordView';
-import { LandingPage } from './modules/public/LandingPage';
-import { AppRouter } from './routes/AppRouter';
+import { lazy, Suspense } from 'react';
+
+const LoginPage = lazy(() => import('./modules/auth/LoginPage').then((m) => ({ default: m.LoginPage })));
+const ResetPasswordView = lazy(() => import('./modules/auth/ResetPasswordView').then((m) => ({ default: m.ResetPasswordView })));
+const LandingPage = lazy(() => import('./modules/public/LandingPage').then((m) => ({ default: m.LandingPage })));
+const AppRouter = lazy(() => import('./routes/AppRouter').then((m) => ({ default: m.AppRouter })));
+
+function FullPageLoadingFallback() {
+  return (
+    <div className="min-h-screen w-full flex flex-col items-center justify-center bg-[#06080D] text-slate-400">
+      <Loader2 className="w-8 h-8 animate-spin text-blue-500 mb-3" />
+      <p className="text-xs font-mono tracking-wider text-slate-500 uppercase">
+        Cargando interfaz...
+      </p>
+    </div>
+  );
+}
 import { TenantProvider } from './context/TenantContext';
 import { useIdleTimeout } from './hooks/useIdleTimeout';
 import { Loader2 } from 'lucide-react';
@@ -216,24 +229,32 @@ export default function App() {
   }
 
   if (publicView === 'reset-password') {
-    return <ResetPasswordView />;
+    return (
+      <Suspense fallback={<FullPageLoadingFallback />}>
+        <ResetPasswordView />
+      </Suspense>
+    );
   }
 
   // Si no hay sesión activa: Mostrar Landing Page pública o Login administrativo
   if (!session) {
     if (publicView === 'login') {
       return (
-        <LoginPage
-          onSuccess={handleLoginSuccess}
-          onBackToLanding={() => setPublicView('landing')}
-        />
+        <Suspense fallback={<FullPageLoadingFallback />}>
+          <LoginPage
+            onSuccess={handleLoginSuccess}
+            onBackToLanding={() => setPublicView('landing')}
+          />
+        </Suspense>
       );
     }
 
     return (
-      <LandingPage
-        onNavigateToLogin={() => setPublicView('login')}
-      />
+      <Suspense fallback={<FullPageLoadingFallback />}>
+        <LandingPage
+          onNavigateToLogin={() => setPublicView('login')}
+        />
+      </Suspense>
     );
   }
 
@@ -247,10 +268,12 @@ export default function App() {
           className: '!rounded-2xl !bg-white dark:!bg-[#0d172e] !text-slate-800 dark:!text-slate-100 !border !border-slate-200/90 dark:!border-[#1e293b] !shadow-2xl !text-xs !p-3',
         }}
       />
-      <AppRouter
-        session={session}
-        onSignOut={handleSignOut}
-      />
+      <Suspense fallback={<FullPageLoadingFallback />}>
+        <AppRouter
+          session={session}
+          onSignOut={handleSignOut}
+        />
+      </Suspense>
     </TenantProvider>
   );
 }

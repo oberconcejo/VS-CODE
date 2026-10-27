@@ -121,6 +121,12 @@
       "skillPath": "skills/animation-vocabulary/SKILL.md",
       "computedHash": "9aaad861dd54dab7c9bb3fb5bd4c539078d8d06c14530d92d49cdb1509bfa937"
     },
+    "api-and-interface-design": {
+      "source": "addyosmani/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/api-and-interface-design/SKILL.md",
+      "computedHash": "8bdbf1fca81bef9258d7e0d9726f933f25677ec8537792e084a3fb7c54acf2ba"
+    },
     "api-connector-builder": {
       "source": "affaan-m/ECC",
       "sourceType": "github",
@@ -132,6 +138,12 @@
       "sourceType": "github",
       "skillPath": "skills/api-design/SKILL.md",
       "computedHash": "9b3dda8b2e808315bb308ee7d492dd0f5171f78a169120de1f06613964ef8a5d"
+    },
+    "app-store-screenshots": {
+      "source": "ParthJadhav/app-store-screenshots",
+      "sourceType": "github",
+      "skillPath": "skills/app-store-screenshots/SKILL.md",
+      "computedHash": "bf64517f9660ce61e5ef2361409f846d8677cc84fe9db1966e391ae004a61693"
     },
     "apple-design": {
       "source": "emilkowalski/skills",
@@ -259,6 +271,12 @@
       "skillPath": "skills/browser-qa/SKILL.md",
       "computedHash": "fd4afd04fe4ddc84f9d0254c495e1e42a5ef6d5791e1e7f2930408b31da839ba"
     },
+    "browser-testing-with-devtools": {
+      "source": "addyosmani/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/browser-testing-with-devtools/SKILL.md",
+      "computedHash": "639950ea71851d9c4919608cba8b6276cd1ba30cd82acdc4949c701537eed661"
+    },
     "bun-runtime": {
       "source": "affaan-m/ECC",
       "sourceType": "github",
@@ -271,6 +289,12 @@
       "skillPath": "skills/canary-watch/SKILL.md",
       "computedHash": "cc57f6ada90455bc46d77df3a0c60613a5d39c5bf6a261ebb4a0bf2fd67e298f"
     },
+    "canvas-design": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "skillPath": "skills/canvas-design/SKILL.md",
+      "computedHash": "4e8bbc31d3b159efdd32d31a63ba8cd5a44d84911e924c1f2c709c50cbcdd0ec"
+    },
     "carrier-relationship-management": {
       "source": "affaan-m/ECC",
       "sourceType": "github",
@@ -282,6 +306,12 @@
       "sourceType": "github",
       "skillPath": "skills/change-impact/SKILL.md",
       "computedHash": "d8b5020516bcd89681189e3847acb0a9209dcd9074512e544b780477b300e2f2"
+    },
+    "ci-cd-and-automation": {
+      "source": "addyosmani/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/ci-cd-and-automation/SKILL.md",
+      "computedHash": "578b098a7d2352ccdac8b8abdc40eb6803538e81cf8382f138da6188a655087c"
     },
     "cisco-ios-patterns": {
       "source": "affaan-m/ECC",
@@ -312,6 +342,18 @@
       "sourceType": "github",
       "skillPath": "skills/clickhouse-io/SKILL.md",
       "computedHash": "7c0ec24c7704e5cc06126b4af437727d18e4048a7983799c664b3d59b7101937"
+    },
+    "code-review-and-quality": {
+      "source": "addyosmani/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/code-review-and-quality/SKILL.md",
+      "computedHash": "0667c7af98996c0bec4fb0eb444680bdbf1da1d6a3cfdf5dbe8cbd350d9d2752"
+    },
+    "code-simplification": {
+      "source": "addyosmani/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/code-simplification/SKILL.md",
+      "computedHash": "7973e746e8e2ea5004d520da970c15a106824b8d6be1bcff48908aec021f3677"
     },
     "code-tour": {
       "source": "affaan-m/ECC",
@@ -373,6 +415,12 @@
       "skillPath": "skills/connections-optimizer/SKILL.md",
       "computedHash": "6fc656c2521891019ec1ec2e690617f5434f5d80545c6f0b3bfc0ec36fcb71bd"
     },
+    "constraint-driven-development": {
+      "source": "addyosmani/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/constraint-driven-development/SKILL.md",
+      "computedHash": "7cdf20ff7d27eb3103b206033a1d87af7afe4a648162f09cd382fc8e3cb9a42b"
+    },
     "content-engine": {
       "source": "affaan-m/ECC",
       "sourceType": "github",
@@ -396,6 +444,12 @@
       "sourceType": "github",
       "skillPath": "skills/context-budget/SKILL.md",
       "computedHash": "b9e79cb018e486878642084393167cd501d43f58807d1ac002ad7367ea15a544"
+    },
+    "context-engineering": {
+      "source": "addyosmani/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/context-engineering/SKILL.md",
+      "computedHash": "807434a4b178635a5539a1da241815ba7228f00b71f8e3ccd529472ce3bcaf80"
     },
     "continuous-agent-loop": {
       "source": "affaan-m/ECC",
@@ -523,6 +577,12 @@
       "skillPath": "skills/database-migrations/SKILL.md",
       "computedHash": "7b41cfe3b19defa8d84f14e28c2d73af807842f7fd28c5155ea3666b395fc948"
     },
+    "debugging-and-error-recovery": {
+      "source": "addyosmani/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/debugging-and-error-recovery/SKILL.md",
+      "computedHash": "6f437bc609eb8d0dc7f4768c17c9aeb85c9c7632bc36703af9f1367ffb47237a"
+    },
     "deep-research": {
       "source": "affaan-m/ECC",
       "sourceType": "github",
@@ -552,6 +612,12 @@
       "sourceType": "github",
       "skillPath": "skills/deployment-patterns/SKILL.md",
       "computedHash": "e57b83943c1f9477924720aaefd9caf5bc69d3e8b6875d85559d6e545b3cc5cc"
+    },
+    "deprecation-and-migration": {
+      "source": "addyosmani/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/deprecation-and-migration/SKILL.md",
+      "computedHash": "0d7b2002e250c02a260f6bc502d7a798ab8e8ca0c020c54d7b0f16053935c72c"
     },
     "design": {
       "source": "nextlevelbuilder/ui-ux-pro-max-skill",
@@ -625,6 +691,12 @@
       "skillPath": "skills/docs-governance/SKILL.md",
       "computedHash": "8aa4d64ae7090bc8b56c1119298023da5177849b93d4d017bc901a27684d0552"
     },
+    "documentation-and-adrs": {
+      "source": "addyosmani/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/documentation-and-adrs/SKILL.md",
+      "computedHash": "f1bd038e74194364c1dcdb3dd0a72194ffd3ca9d3a103c125ca1a62e801a0cc4"
+    },
     "documentation-lookup": {
       "source": "affaan-m/ECC",
       "sourceType": "github",
@@ -636,6 +708,12 @@
       "sourceType": "github",
       "skillPath": "skills/dotnet-patterns/SKILL.md",
       "computedHash": "a7ff4b3b27a3b4d18de7fa523c39f3df0e60c44e43048d8fa144991bff80b7a5"
+    },
+    "doubt-driven-development": {
+      "source": "addyosmani/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/doubt-driven-development/SKILL.md",
+      "computedHash": "b13f18a68abf2a1fd0c30adeac9bec0ee551adec9f2a1dc2700f1a6e3eb48092"
     },
     "dynamic-workflow-mode": {
       "source": "affaan-m/ECC",
@@ -805,6 +883,12 @@
       "skillPath": "skills/frontend-slides/SKILL.md",
       "computedHash": "dd75659fb4f697bdfa12e9ba60b35977c61b13b778f65ec1462e8a5025ed7b6d"
     },
+    "frontend-ui-engineering": {
+      "source": "addyosmani/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/frontend-ui-engineering/SKILL.md",
+      "computedHash": "49bb6ccfc41753bdd679f368ce75629ae9d424c5b8abc33faf949a4a55f919a1"
+    },
     "fsharp-testing": {
       "source": "affaan-m/ECC",
       "sourceType": "github",
@@ -834,6 +918,12 @@
       "sourceType": "github",
       "skillPath": "skills/git-workflow/SKILL.md",
       "computedHash": "f44e488fd739565c1613b8dcc84a0f0ed224905e380265c42feebcea97b8c489"
+    },
+    "git-workflow-and-versioning": {
+      "source": "addyosmani/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/git-workflow-and-versioning/SKILL.md",
+      "computedHash": "e8e0d1cc98c0a6b81d2979442ae92addae32cd5194fb5c4eac4ac5228b408770"
     },
     "github-ops": {
       "source": "affaan-m/ECC",
@@ -997,6 +1087,12 @@
       "skillPath": "skills/i18n-sync/SKILL.md",
       "computedHash": "11697ce01409fb4daa089c6b1a9a1dc9a57cc611ec526879d5928f1f2f164f85"
     },
+    "idea-refine": {
+      "source": "addyosmani/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/idea-refine/SKILL.md",
+      "computedHash": "77739c4f6a29c0fad465a30bab9e862445a3f1b0f92808ffcd541fa02ed0637b"
+    },
     "impeccable": {
       "source": "pbakaus/impeccable",
       "sourceType": "github",
@@ -1009,6 +1105,12 @@
       "skillPath": "skills/improve-animations/SKILL.md",
       "computedHash": "b913ec7ef2b1aa900060eb6e5dbdccc94b6ea631059ec3474c4b61e2ffefeeb4"
     },
+    "incremental-implementation": {
+      "source": "addyosmani/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/incremental-implementation/SKILL.md",
+      "computedHash": "bb1198705f46dc9ff75fb5685a7a872de5924d743b44eb202135f5046750ab7e"
+    },
     "inherit-legacy-style": {
       "source": "affaan-m/ECC",
       "sourceType": "github",
@@ -1020,6 +1122,12 @@
       "sourceType": "github",
       "skillPath": "skills/intent-driven-development/SKILL.md",
       "computedHash": "d6e4de51ec724a67d51264b09d06d8208c8046453b8a46dbf9a8e9a2dea1d7c6"
+    },
+    "interview-me": {
+      "source": "addyosmani/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/interview-me/SKILL.md",
+      "computedHash": "4229002dd862e6e037c8a01c3e31d9af097465c58b2c3611912edb2af005f303"
     },
     "inventory-demand-planning": {
       "source": "affaan-m/ECC",
@@ -1381,6 +1489,12 @@
       "skillPath": "skills/nuxt4-patterns/SKILL.md",
       "computedHash": "fb63d029610d16afd331b6049a284432a73ca88f4e9c12e4867eb206ca73521d"
     },
+    "observability-and-instrumentation": {
+      "source": "addyosmani/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/observability-and-instrumentation/SKILL.md",
+      "computedHash": "e5eba32f952a29d20c0383728a9505d0ca2a90f1d8d075603e53804b441b2dd2"
+    },
     "openclaw-persona-forge": {
       "source": "affaan-m/ECC",
       "sourceType": "github",
@@ -1447,6 +1561,12 @@
       "skillPath": "skills/parallel-execution-optimizer/SKILL.md",
       "computedHash": "3445625b860dd74ad3691a98cd058062c673df9957431fed6ef7906a7b264e37"
     },
+    "performance-optimization": {
+      "source": "addyosmani/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/performance-optimization/SKILL.md",
+      "computedHash": "a2cdba94ff8f898183b3d5af736272dc439826083723b17a88782e75d2351530"
+    },
     "perl-patterns": {
       "source": "affaan-m/ECC",
       "sourceType": "github",
@@ -1488,6 +1608,12 @@
       "sourceType": "github",
       "skillPath": "skills/plankton-code-quality/SKILL.md",
       "computedHash": "15f1c6557ff85e646c31158fe4eb76ab5f2bf8edf28e0f3cdf319ff06a7b1640"
+    },
+    "planning-and-task-breakdown": {
+      "source": "addyosmani/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/planning-and-task-breakdown/SKILL.md",
+      "computedHash": "0dc14a1402cdabd376f2d81d2225fcb4a18ee63d58b945ff83affeb024285b8f"
     },
     "postgres-patterns": {
       "source": "affaan-m/ECC",
@@ -1765,6 +1891,12 @@
       "skillPath": "skills/search-first/SKILL.md",
       "computedHash": "98f6910f64c6950f12effc903844a0aa82d964ae24af6160a5bdbfee45c8d066"
     },
+    "security-and-hardening": {
+      "source": "addyosmani/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/security-and-hardening/SKILL.md",
+      "computedHash": "32a1243d6eb45fd342c1f4e9f9ee5f1651a1e9fdccb86dcbbbee5d6f455ed362"
+    },
     "security-bounty-hunter": {
       "source": "affaan-m/ECC",
       "sourceType": "github",
@@ -1788,6 +1920,12 @@
       "sourceType": "github",
       "skillPath": "skills/seo/SKILL.md",
       "computedHash": "342da0c7fa6235cdc08789e67bac0e8ff770e8aeaa106f32895c17201501b1b0"
+    },
+    "shipping-and-launch": {
+      "source": "addyosmani/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/shipping-and-launch/SKILL.md",
+      "computedHash": "85afde7a62dac2d9abeef806f93a6920d11b4396bc637685a02f1637086c8aab"
     },
     "skill-comply": {
       "source": "affaan-m/ECC",
@@ -1830,6 +1968,18 @@
       "sourceType": "github",
       "skillPath": "skills/social-publisher/SKILL.md",
       "computedHash": "606fbbe84e591ca18937b72a7bd3e142592de0520c612005c113c8841ea020b4"
+    },
+    "source-driven-development": {
+      "source": "addyosmani/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/source-driven-development/SKILL.md",
+      "computedHash": "d1923bb807f7db157a794f07a590ca639b3789b2f1a5eabef993f8df24791e2a"
+    },
+    "spec-driven-development": {
+      "source": "addyosmani/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/spec-driven-development/SKILL.md",
+      "computedHash": "90a53ee823e49fd1518a01e6cf64968d4848bce3fc0b0115b1c19b7e5a87a5ca"
     },
     "springboot-patterns": {
       "source": "affaan-m/ECC",
@@ -1951,6 +2101,12 @@
       "skillPath": "skills/test-collaboration/SKILL.md",
       "computedHash": "5d1a2b1d88be9cbe3d8deec449aa85e195a746d3066bfe47a9ba5eb0d068874d"
     },
+    "test-driven-development": {
+      "source": "addyosmani/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/test-driven-development/SKILL.md",
+      "computedHash": "e4725d435cbd6e94c1da1a39eff634f6592c7ac303a06c61532d5c399b1f75c3"
+    },
     "tinystruct-patterns": {
       "source": "affaan-m/ECC",
       "sourceType": "github",
@@ -1968,6 +2124,12 @@
       "sourceType": "github",
       "skillPath": "skills/token-card/SKILL.md",
       "computedHash": "bbe030fc8ecaf309dbba355a93ca39387e593d68a25742ade10133720af6216a"
+    },
+    "transitions-dev": {
+      "source": "Jakubantalik/transitions.dev",
+      "sourceType": "github",
+      "skillPath": "skills/transitions-dev/SKILL.md",
+      "computedHash": "b8f0f695498eec44440f3c00a5a0cf8dcc9e1b4d5b519665bf789cff683aa7c5"
     },
     "ui-demo": {
       "source": "affaan-m/ECC",
@@ -2011,6 +2173,18 @@
       "skillPath": "skills/unified-notifications-ops/SKILL.md",
       "computedHash": "c36aad1908bb05d9f38ac61e304f307a89c89b8c736a9e4c31903a6f6622e74f"
     },
+    "using-agent-skills": {
+      "source": "addyosmani/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/using-agent-skills/SKILL.md",
+      "computedHash": "4221dc84c943696829025a42c7961b257afdb8f1ba20af42463434a0d9c03812"
+    },
+    "ux-designer": {
+      "source": "szilu/ux-designer-skill",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "40429a131efcee588340176ad4f8c07b5e787d302065d552ea29121944b535d6"
+    },
     "verification-loop": {
       "source": "affaan-m/ECC",
       "sourceType": "github",
@@ -2046,6 +2220,12 @@
       "sourceType": "github",
       "skillPath": "skills/vue-patterns/SKILL.md",
       "computedHash": "0fd03b3c1f40323f61b65f6033cdb6e332e8367cbccb11b2b02159f5a10679ba"
+    },
+    "web-artifacts-builder": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "skillPath": "skills/web-artifacts-builder/SKILL.md",
+      "computedHash": "fdddbe9bb720ea1aea9292ee513ec10b2a8f4912e2c343bdc246ab3febd7c9b3"
     },
     "windows-desktop-e2e": {
       "source": "affaan-m/ECC",

@@ -618,6 +618,9 @@ export default defineConfig({
     adminResetPasswordDevPlugin(),
   ],
   server: {
+    watch: {
+      ignored: ['**/.agents/**', '**/.git/**', '**/dist/**'],
+    },
     host: true, // Permite escuchar en la red local
     port: 5173,
     allowedHosts: true, // Permite el acceso desde cualquier host o preview deployment

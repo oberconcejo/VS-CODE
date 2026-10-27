@@ -39,3 +39,7 @@ supabase/.temp/
 
 .vercel
 .env*
+
+# Agent Symlinks
+.claude/
+agent/
