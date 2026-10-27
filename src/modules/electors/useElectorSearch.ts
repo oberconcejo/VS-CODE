@@ -1,7 +1,6 @@
 import { useState, useRef, useCallback } from 'react';
 import { supabase } from '../../services/supabase';
 import { isValidUUID } from '../../utils/uuid';
-import { generarElectorDemografico } from '../../utils/demographicGenerator';
 
 export interface ElectorLookupResult {
   nombres: string;
@@ -12,6 +11,7 @@ export interface ElectorLookupResult {
   puesto_votacion?: string;
   mesa?: string;
   duplicado?: boolean;
+  encontrado?: boolean;
   mensaje?: string;
   origen?: string;
 }
@@ -154,41 +154,22 @@ export function useElectorSearch() {
                     departamento: maestro.departamento || '',
                   };
                 } else {
-                  // Fallback demográfico nacional: garantiza respuesta inmediata para cualquier documento
-                  const demo = generarElectorDemografico(docLimpio);
                   res = {
                     ok: true,
                     duplicado: false,
-                    encontrado: true,
-                    origen: 'censo_nacional',
-                    nombres: demo.nombres,
-                    apellidos: demo.apellidos,
-                    edad: demo.edad,
-                    puesto_votacion: demo.puesto_votacion,
-                    mesa: demo.mesa,
-                    municipio: demo.municipio,
-                    departamento: demo.departamento,
-                    mensaje: 'Identificado en Censo Nacional',
+                    encontrado: false,
+                    mensaje: 'Persona no registrada o número de documento no encontrado en el censo oficial ni en RUI.',
                   };
                 }
               }
             }
           } catch (dbErr) {
             console.warn('Error en fallback directo Supabase:', dbErr);
-            const demo = generarElectorDemografico(docLimpio);
             res = {
               ok: true,
               duplicado: false,
-              encontrado: true,
-              origen: 'censo_nacional',
-              nombres: demo.nombres,
-              apellidos: demo.apellidos,
-              edad: demo.edad,
-              puesto_votacion: demo.puesto_votacion,
-              mesa: demo.mesa,
-              municipio: demo.municipio,
-              departamento: demo.departamento,
-              mensaje: 'Identificado en Censo Nacional',
+              encontrado: false,
+              mensaje: 'Persona no registrada o número de documento no encontrado.',
             };
           }
         }
@@ -209,20 +190,15 @@ export function useElectorSearch() {
           };
         }
 
-        // Caso B: Si la API externa no encontró el documento, generar resolución demográfica
+        // Caso B: Si no se encontró el documento en las fuentes oficiales
         if (!res || res.encontrado === false || res.ok === false) {
-          const demo = generarElectorDemografico(docLimpio);
           return {
-            nombres: demo.nombres,
-            apellidos: demo.apellidos,
-            edad: demo.edad,
-            municipio: demo.municipio,
-            departamento: demo.departamento,
-            puesto_votacion: demo.puesto_votacion,
-            mesa: demo.mesa,
+            nombres: '',
+            apellidos: '',
+            edad: '',
             duplicado: false,
-            origen: 'censo_nacional',
-            mensaje: 'Identificado en Censo Nacional',
+            encontrado: false,
+            mensaje: res?.mensaje || 'Persona no registrada o número de documento no encontrado en el censo oficial ni en RUI.',
           };
         }
 
@@ -231,18 +207,13 @@ export function useElectorSearch() {
         const apellidosVal = payloadData?.apellidos || res?.apellidos || '';
 
         if (!nombresVal && !apellidosVal) {
-          const demo = generarElectorDemografico(docLimpio);
           return {
-            nombres: demo.nombres,
-            apellidos: demo.apellidos,
-            edad: demo.edad,
-            municipio: demo.municipio,
-            departamento: demo.departamento,
-            puesto_votacion: demo.puesto_votacion,
-            mesa: demo.mesa,
+            nombres: '',
+            apellidos: '',
+            edad: '',
             duplicado: false,
-            origen: 'censo_nacional',
-            mensaje: 'Identificado en Censo Nacional',
+            encontrado: false,
+            mensaje: 'Persona no registrada o número de documento no encontrado.',
           };
         }
 
@@ -262,6 +233,7 @@ export function useElectorSearch() {
               ? String(payloadData?.mesa || payloadData?.mesa_sugerida || res.mesa)
               : '',
           duplicado: false,
+          encontrado: true,
           origen: res.origen || payloadData?.origen || 'censo_nacional',
           mensaje: res.mensaje || '',
         };

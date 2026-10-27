@@ -16,7 +16,6 @@ import { getPollingPlacesForTenant, formatearPuestoSimple } from '../electors/co
 import type { PollingPlace } from '../../types';
 import { PremiumAlertModal, type AlertType } from '../../components/common/PremiumAlertModal';
 import { isValidUUID } from '../../utils/uuid';
-import { generarElectorDemografico } from '../../utils/demographicGenerator';
 
 export interface LeaderRegisterProps {
   currentUserId: string;
@@ -69,7 +68,7 @@ export const LeaderRegisterElectorView: React.FC<LeaderRegisterProps> = ({
   const [loadingConsulta, setLoadingConsulta] = useState(false);
   const [saving, setSaving] = useState(false);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
-  const [estadoCedula, setEstadoCedula] = useState<{ tipo: 'ok' | 'error' | 'idle'; mensaje: string }>({
+  const [estadoCedula, setEstadoCedula] = useState<{ tipo: 'ok' | 'error' | 'warning' | 'idle'; mensaje: string }>({
     tipo: 'idle',
     mensaje: '',
   });
@@ -221,19 +220,7 @@ export const LeaderRegisterElectorView: React.FC<LeaderRegisterProps> = ({
         }
       }
 
-      // 3. Fallback de Censo Electoral Nacional: garantiza que cualquier documento ingresado
-      // autocomplete de inmediato con datos de un elector colombiano real
-      if (!respuesta || (!respuesta.encontrado && !respuesta.duplicado)) {
-        const demo = generarElectorDemografico(cedulaLimpia, activeTenant?.municipio, activeTenant?.departamento);
-        respuesta = {
-          ok: true,
-          duplicado: false,
-          encontrado: true,
-          ...demo,
-          data: demo,
-          mensaje: 'Identificado en Censo Electoral',
-        };
-      }
+      // 3. Sin fallback demográfico simulado
 
       if (latestCedulaRef.current !== cedulaLimpia) return;
 
@@ -286,7 +273,7 @@ export const LeaderRegisterElectorView: React.FC<LeaderRegisterProps> = ({
           mensaje: 'Disponible para registro (Datos verificados)',
         });
       } else {
-        // Disponible pero sin datos precargados: habilitar para llenado manual
+        // Documento no encontrado en fuentes oficiales (DNP / censo): habilitar para llenado manual
         autofilledCedulaRef.current = '';
         setIsAutofilledFromCenso(false);
 
@@ -300,8 +287,8 @@ export const LeaderRegisterElectorView: React.FC<LeaderRegisterProps> = ({
         }));
 
         setEstadoCedula({
-          tipo: 'ok',
-          mensaje: 'Disponible para registro',
+          tipo: 'warning',
+          mensaje: 'Persona no registrada o número de cédula no encontrado. Ingrese los datos manualmente.',
         });
       }
     } catch (error) {
@@ -610,6 +597,11 @@ export const LeaderRegisterElectorView: React.FC<LeaderRegisterProps> = ({
                   <CheckCircle2 className="w-3 h-3"/> {estadoCedula.mensaje}
                 </span>
               )}
+              {estadoCedula.tipo === 'warning' && (
+                <span className="flex items-center gap-1 text-amber-600 dark:text-amber-400 font-semibold normal-case font-sans">
+                  <AlertTriangle className="w-3 h-3"/> {estadoCedula.mensaje}
+                </span>
+              )}
             </div>
             <div className="relative">
               <input
@@ -640,11 +632,19 @@ export const LeaderRegisterElectorView: React.FC<LeaderRegisterProps> = ({
                   <Lock className="w-4 h-4 text-rose-500" />
                 ) : estadoCedula.tipo === 'ok' ? (
                   <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                ) : estadoCedula.tipo === 'warning' ? (
+                  <AlertTriangle className="w-4 h-4 text-amber-500" />
                 ) : null}
               </div>
             </div>
             {estadoCedula.tipo === 'error' && (
               <p className="text-xs text-rose-600 dark:text-rose-400 font-semibold mt-1 flex items-start gap-1.5 animate-in fade-in">
+                <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5"/>
+                <span>{estadoCedula.mensaje}</span>
+              </p>
+            )}
+            {estadoCedula.tipo === 'warning' && (
+              <p className="text-xs text-amber-600 dark:text-amber-400 font-semibold mt-1 flex items-start gap-1.5 animate-in fade-in">
                 <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5"/>
                 <span>{estadoCedula.mensaje}</span>
               </p>

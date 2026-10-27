@@ -11,6 +11,7 @@ import {
   Loader2,
   CheckCircle2,
   AlertTriangle,
+  AlertCircle,
   RotateCcw,
   Check,
   Lock,
@@ -71,6 +72,7 @@ export const RegisterElectorView = ({
   const [isCheckingCedula, setIsCheckingCedula] = useState(false);
   const [collisionResult, setCollisionResult] = useState<CollisionCheckResult | null>(null);
   const [isAutofilledFromCenso, setIsAutofilledFromCenso] = useState(false);
+  const [notFoundNotice, setNotFoundNotice] = useState<{ show: boolean; cedula: string; mensaje?: string } | null>(null);
   const [origenVerificado, setOrigenVerificado] = useState<string | null>(null);
   const { buscarDocumento } = useElectorSearch();
   const [alertaJurisdiccion, setAlertaJurisdiccion] = useState<{
@@ -154,6 +156,7 @@ export const RegisterElectorView = ({
     setPuestoVotacion('');
     setMesa('');
     setAlertaJurisdiccion({ mostrar: false });
+    setNotFoundNotice(null);
   }, []);
 
   const validarJurisdiccionElector = useCallback(
@@ -336,6 +339,11 @@ export const RegisterElectorView = ({
       }
 
       setCollisionResult({ exists: false });
+      setNotFoundNotice({
+        show: true,
+        cedula: cleanCedula,
+        mensaje: res?.mensaje || 'Persona no registrada o número de documento no encontrado en el censo oficial ni en RUI.',
+      });
       if (autofilledCedulaRef.current || isAutofilledFromCenso) {
         setNombres('');
         setApellidos('');
@@ -869,16 +877,24 @@ export const RegisterElectorView = ({
                   <span className="flex items-center gap-1 px-2 py-1 text-[11px] font-mono text-amber-500 dark:text-amber-400">
                     <AlertTriangle className="w-3.5 h-3.5" />
                   </span>
-                ) : collisionResult && !collisionResult.exists && cedula.length >= 5 ? (
+                ) : isAutofilledFromCenso ? (
                   <button
                     type="button"
                     onClick={() => checkCedulaCollision(cedula, true)}
-                    title="Volver a consultar"
+                    title="Datos verificados en Censo / RUI. Clic para volver a consultar"
                     className="flex items-center gap-1 px-2 py-1 text-[11px] font-mono text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 rounded-md transition-colors cursor-pointer"
                   >
                     <CheckCircle2 className="w-3.5 h-3.5" />
-                    <span className="hidden sm:inline font-semibold">Listo</span>
+                    <span className="hidden sm:inline font-semibold">Verificado</span>
                   </button>
+                ) : notFoundNotice?.show ? (
+                  <span
+                    title={notFoundNotice.mensaje}
+                    className="flex items-center gap-1 px-2 py-1 text-[11px] font-mono text-amber-600 dark:text-amber-400 bg-amber-500/10 rounded-md"
+                  >
+                    <AlertCircle className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline font-semibold">No registrado</span>
+                  </span>
                 ) : cedula.length >= 5 ? (
                   <button
                     type="button"
@@ -1002,6 +1018,34 @@ export const RegisterElectorView = ({
                       <AlertTriangle className="w-3.5 h-3.5 text-rose-500 shrink-0" />
                       <span>Para mantener la integridad del censo, los campos y el botón de guardado han sido inhabilitados.</span>
                     </p>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Banner de Documento No Registrado en Censo Oficial ni RUI */}
+            <AnimatePresence>
+              {notFoundNotice?.show && !collisionResult?.exists && !isAutofilledFromCenso && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.98, y: -4 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.98, y: -4 }}
+                  transition={{ type: 'spring', stiffness: 350, damping: 25 }}
+                  className="rounded-2xl bg-amber-500/10 border border-amber-500/25 p-3.5 sm:p-4 text-xs text-amber-900 dark:text-amber-200"
+                >
+                  <div className="flex items-start gap-2.5">
+                    <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                    <div className="space-y-1">
+                      <p className="font-semibold text-amber-950 dark:text-amber-200">
+                        Persona no registrada en censo oficial ni en RUI
+                      </p>
+                      <p className="text-[11px] text-amber-800 dark:text-amber-300/90 leading-relaxed">
+                        El documento <strong className="font-mono text-amber-950 dark:text-amber-100">C.C. {notFoundNotice.cedula}</strong> no figura en la base de datos de DNP (Ventanilla Social / Sisbén IV) ni en el censo electoral registrado.
+                      </p>
+                      <p className="text-[11px] text-amber-800/80 dark:text-amber-300/80">
+                        ✓ Puede continuar y digitar los nombres, edad y puesto del elector manualmente a continuación.
+                      </p>
+                    </div>
                   </div>
                 </motion.div>
               )}
