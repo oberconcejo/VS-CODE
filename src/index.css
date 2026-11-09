@@ -327,7 +327,7 @@ html.lenis, html.lenis body {
 
 
 /* ==========================================================================
-   OPTIMIZACIONES DE RENDIMIENTO MÓVIL (STAFF MOBILE PERFORMANCE)
+   OPTIMIZACIONES DE RENDIMIENTO MÓVIL (STAFF MOBILE PERFORMANCE & IOS WEBKIT)
    ========================================================================== */
 
 /* Scroll nativo ultra fluido acelerado por hardware para iOS / Android */
@@ -335,27 +335,48 @@ html, body {
   -webkit-overflow-scrolling: touch;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1023px), (pointer: coarse) {
+  /* GARANTÍA RADICAL WEBKIT: Ningún bloque o texto queda invisible durante scroll */
+  main *[style*="opacity: 0"],
+  section *[style*="opacity: 0"],
+  section[style*="opacity: 0"],
+  div[style*="opacity: 0"],
+  h1[style*="opacity: 0"],
+  h2[style*="opacity: 0"],
+  h3[style*="opacity: 0"],
+  p[style*="opacity: 0"],
+  span[style*="opacity: 0"],
+  a[style*="opacity: 0"],
+  button[style*="opacity: 0"] {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+  }
+
   /* Fondo sólido translúcido de alto contraste sin GPU blur para tarjetas en móvil */
   .cirrel-glass-card {
-    background: rgba(12, 18, 34, 0.92) !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
+    background: linear-gradient(180deg, rgba(20, 29, 48, 0.92) 0%, rgba(10, 15, 29, 0.96) 100%) !important;
     border-color: rgba(255, 255, 255, 0.08) !important;
+    transform: none !important;
+    will-change: auto !important;
   }
 
   .cirrel-glass-pill {
-    background: rgba(20, 30, 52, 0.85) !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
+    background: rgba(20, 30, 52, 0.9) !important;
     border-color: rgba(255, 255, 255, 0.12) !important;
+    transform: none !important;
+    will-change: auto !important;
   }
 
   /* El blur queda reservado exclusivamente para la cápsula del navbar flotante */
   .cirrel-glass-nav {
-    backdrop-filter: blur(12px) saturate(160%) !important;
-    -webkit-backdrop-filter: blur(12px) saturate(160%) !important;
-    background-color: rgba(8, 12, 22, 0.85) !important;
+    backdrop-filter: blur(16px) saturate(160%) !important;
+    -webkit-backdrop-filter: blur(16px) saturate(160%) !important;
+    background-color: rgba(8, 12, 22, 0.88) !important;
   }
 
   /* Reducción de radio de orbes y luces difusas para evitar GPU throttling */
@@ -366,7 +387,6 @@ html, body {
     filter: blur(40px) !important;
   }
 
-  /* Eliminar will-change en móvil para liberar memoria de textura de la GPU */
   .will-change-transform {
     will-change: auto !important;
   }

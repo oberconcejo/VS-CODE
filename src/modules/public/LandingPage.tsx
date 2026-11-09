@@ -51,28 +51,26 @@ const appleSoftSpring = {
 // ----------------------------------------------------------------------------
 // SISTEMA DE ANIMACIÓN CIRREL: ESCALONADO, ELEVACIÓN SUAVE Y CURVA CUBIC-BEZIER
 // ----------------------------------------------------------------------------
-const isMobile =
+const isDesktop =
   typeof window !== 'undefined' &&
-  (window.innerWidth < 768 || (typeof window.matchMedia === 'function' && window.matchMedia('(pointer: coarse)').matches));
+  window.innerWidth >= 1024 &&
+  typeof window.matchMedia === 'function' &&
+  window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
-// Viewport predictivo para desktop; en móvil desactivado para evitar esperar al IntersectionObserver
-export const cirrelViewport = isMobile
-  ? undefined
-  : {
+// Viewport predictivo únicamente en Desktop con puntero preciso
+export const cirrelViewport = isDesktop
+  ? {
       once: true,
       amount: 0.05,
       margin: '0px 0px 180px 0px',
-    };
+    }
+  : undefined;
 
 export const cirrelEase = [0.16, 1, 0.3, 1] as const;
 
-// En celular: 100% visible sin retraso ni opacidad cero inicial
-export const cirrelStaggerContainer: Variants = isMobile
+// En celular / tablet: 100% visible sin retraso ni opacidad cero en ningún estado
+export const cirrelStaggerContainer: Variants = isDesktop
   ? {
-      hidden: { opacity: 1 },
-      visible: { opacity: 1, transition: { duration: 0 } },
-    }
-  : {
       hidden: { opacity: 0 },
       visible: {
         opacity: 1,
@@ -81,28 +79,32 @@ export const cirrelStaggerContainer: Variants = isMobile
           delayChildren: 0.02,
         },
       },
-    };
-
-export const cirrelFadeUpItem: Variants = isMobile
-  ? {
-      hidden: { opacity: 1, y: 0, scale: 1 },
-      visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0 } },
     }
   : {
+      hidden: { opacity: 1, y: 0, scale: 1 },
+      visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0 } },
+    };
+
+export const cirrelFadeUpItem: Variants = isDesktop
+  ? {
       hidden: {
         opacity: 0,
-        y: 20,
-        scale: 0.97,
+        y: 18,
+        scale: 0.98,
       },
       visible: {
         opacity: 1,
         y: 0,
         scale: 1,
         transition: {
-          duration: 0.55,
+          duration: 0.5,
           ease: cirrelEase,
         },
       },
+    }
+  : {
+      hidden: { opacity: 1, y: 0, scale: 1 },
+      visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0 } },
     };
 
 const keynoteContainer = cirrelStaggerContainer;
@@ -471,16 +473,15 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin }) =
             2. HERO SECTION CON REVELADO CINEMATOGRÁFICO DE KEYNOTE
             ========================================================================= */}
         <motion.section
-          style={isMobile ? undefined : { scale: heroScale, opacity: heroOpacity, y: heroY }}
-          className={`relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 sm:pb-24 ${isMobile ? '' : 'will-change-transform'}`}
+          style={isDesktop ? { scale: heroScale, opacity: heroOpacity, y: heroY } : undefined}
+          className={`relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 sm:pb-24 ${isDesktop ? 'will-change-transform' : ''}`}
         >
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
             {/* Columna Izquierda: Información Principal con Blur-Fade Stagger */}
             <motion.div
               variants={keynoteContainer}
-              initial={isMobile ? false : "hidden"}
-              whileInView={isMobile ? undefined : "visible"}
-              viewport={cirrelViewport}
+              initial={isDesktop ? "hidden" : false}
+              animate="visible"
               className="lg:col-span-7 text-left space-y-6"
             >
               <motion.div variants={keynoteItem}>
@@ -561,9 +562,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin }) =
             {/* Tarjeta HUD Métrica Lateral con Conteo Progresivo Apple */}
             <motion.div
               variants={keynoteContainer}
-              initial={isMobile ? false : "hidden"}
-              whileInView={isMobile ? undefined : "visible"}
-              viewport={cirrelViewport}
+              initial={isDesktop ? "hidden" : false}
+              animate="visible"
               className="lg:col-span-5 grid grid-cols-2 gap-3.5 w-full"
             >
               {[
@@ -603,8 +603,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin }) =
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
             <motion.div
               variants={keynoteContainer}
-              initial={isMobile ? false : "hidden"}
-              whileInView={isMobile ? undefined : "visible"}
+              initial={isDesktop ? "hidden" : false}
+              animate={isDesktop ? undefined : "visible"}
+              whileInView={isDesktop ? "visible" : undefined}
               viewport={cirrelViewport}
               className="lg:col-span-4 text-left space-y-4"
             >
@@ -643,8 +644,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin }) =
             {/* Grid 6 Módulos con Parallax Hover & Micro-Física */}
             <motion.div
               variants={keynoteContainer}
-              initial={isMobile ? false : "hidden"}
-              whileInView={isMobile ? undefined : "visible"}
+              initial={isDesktop ? "hidden" : false}
+              animate={isDesktop ? undefined : "visible"}
+              whileInView={isDesktop ? "visible" : undefined}
               viewport={cirrelViewport}
               className="lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-left"
             >
@@ -708,8 +710,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin }) =
           {/* Encabezado */}
           <motion.div
             variants={keynoteContainer}
-            initial={isMobile ? false : "hidden"}
-            whileInView={isMobile ? undefined : "visible"}
+            initial={isDesktop ? "hidden" : false}
+            animate={isDesktop ? undefined : "visible"}
+            whileInView={isDesktop ? "visible" : undefined}
             viewport={cirrelViewport}
             className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10 text-left"
           >
@@ -956,8 +959,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin }) =
             ========================================================================= */}
         <motion.section
           id="contacto"
-          initial={isMobile ? false : "hidden"}
-          whileInView={isMobile ? undefined : "visible"}
+          initial={isDesktop ? "hidden" : false}
+          animate={isDesktop ? undefined : "visible"}
+          whileInView={isDesktop ? "visible" : undefined}
           viewport={cirrelViewport}
           variants={cirrelStaggerContainer}
           className="scroll-mt-24 py-16 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto border-t border-white/[0.08] text-left"
@@ -971,7 +975,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin }) =
             </h3>
           </motion.div>
 
-          <motion.div variants={cirrelStaggerContainer} initial={isMobile ? false : "hidden"} whileInView={isMobile ? undefined : "visible"} viewport={cirrelViewport} className="space-y-3">
+          <motion.div variants={cirrelStaggerContainer} initial={isDesktop ? "hidden" : false} animate={isDesktop ? undefined : "visible"} whileInView={isDesktop ? "visible" : undefined} viewport={cirrelViewport} className="space-y-3">
             {[
               {
                 q: '¿Cómo garantiza la plataforma la transparencia electoral?',
