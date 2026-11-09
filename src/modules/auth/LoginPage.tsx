@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { motion } from 'motion/react';
 import { supabase } from '../../lib/supabase';
 import type { Profile, ActiveSessionData } from '../../types';
 import {
@@ -84,6 +85,14 @@ export const LoginPage: React.FC<LoginPageProps> = ({
   const [infoMessage, setInfoMessage] = useState<string | null>(null);
   const [timeoutMessage, setTimeoutMessage] = useState<string | null>(null);
   const [savedEmails, setSavedEmails] = useState<string[]>([]);
+  const isMounted = useRef(true);
+
+  useEffect(() => {
+    isMounted.current = true;
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
 
   useEffect(() => {
     try {
@@ -137,6 +146,11 @@ export const LoginPage: React.FC<LoginPageProps> = ({
     const trimmedEmail = email.trim();
     if (!trimmedEmail || !password) {
       setErrorMessage('Por favor ingresa tu usuario o correo y contraseña.');
+      return;
+    }
+
+    if (trimmedEmail.length > 254 || password.length > 256) {
+      setErrorMessage('Los datos ingresados exceden el límite de seguridad permitido.');
       return;
     }
 
@@ -260,7 +274,9 @@ export const LoginPage: React.FC<LoginPageProps> = ({
       console.error('Error durante autenticación:', err);
       setErrorMessage(translateAuthError(err));
     } finally {
-      setLoading(false);
+      if (isMounted.current) {
+        setLoading(false);
+      }
     }
   };
 
@@ -282,14 +298,17 @@ export const LoginPage: React.FC<LoginPageProps> = ({
 
       {/* Botón Volver al inicio si está disponible */}
       {onBackToLanding && (
-        <button
+        <motion.button
           type="button"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.96 }}
+          transition={{ type: 'spring', stiffness: 400, damping: 30 }}
           onClick={onBackToLanding}
-          className="absolute top-6 left-6 z-20 flex items-center gap-2 text-xs font-semibold text-slate-400 hover:text-white transition-colors cursor-pointer bg-[#0e1524]/80 backdrop-blur-md px-3.5 py-2 rounded-xl border border-slate-700/60 shadow-lg hover:border-slate-600"
+          className="cirrel-glass-pill absolute top-6 left-6 z-20 flex items-center gap-2 text-xs font-semibold text-zinc-300 hover:text-white transition-colors cursor-pointer px-4 py-2 rounded-full border border-white/[0.12] shadow-lg will-change-transform"
         >
-          <ArrowLeft className="w-4 h-4" />
+          <ArrowLeft className="w-4 h-4 text-blue-400" />
           <span>Volver al inicio</span>
-        </button>
+        </motion.button>
       )}
 
       {/* TARJETA CENTRAL EN UN SOLO TONO OSCURO HOMOGÉNEO */}

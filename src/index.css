@@ -12,6 +12,19 @@
     --border-highlight: rgba(0, 0, 0, 0.14);
     --accent-primary: #2563eb;
     --accent-glow: rgba(37, 99, 235, 0.12);
+
+    /* Tokens Cirrel Glassmorphism (Modo Claro) */
+    --cirrel-glass: rgba(255, 255, 255, 0.65);
+    --cirrel-glass-hi: rgba(255, 255, 255, 0.85);
+    --cirrel-glass-nav: rgba(255, 255, 255, 0.72);
+    --cirrel-card-from: rgba(255, 255, 255, 0.75);
+    --cirrel-card-to: rgba(255, 255, 255, 0.35);
+    --cirrel-edge: rgba(255, 255, 255, 0.95);
+    --cirrel-edge-hover: #ffffff;
+    --cirrel-rim: rgba(15, 25, 45, 0.08);
+    --cirrel-rim-hover: rgba(15, 25, 45, 0.16);
+    --cirrel-shadow: 0 1px 2px rgba(15, 30, 60, 0.04), 0 18px 40px -22px rgba(15, 30, 60, 0.22);
+    --cirrel-shadow-lg: 0 4px 12px rgba(15, 30, 60, 0.06), 0 35px 70px -25px rgba(15, 30, 60, 0.32);
   }
 
   :root.dark {
@@ -24,6 +37,19 @@
     --border-highlight: rgba(255, 255, 255, 0.14); /* Borde activo de interacción */
     --accent-primary: #3b82f6;
     --accent-glow: rgba(59, 130, 246, 0.15);
+
+    /* Tokens Cirrel Glassmorphism (Modo Oscuro - Alta Precisión Apple/Cirrel) */
+    --cirrel-glass: rgba(255, 255, 255, 0.04);
+    --cirrel-glass-hi: rgba(255, 255, 255, 0.08);
+    --cirrel-glass-nav: rgba(255, 255, 255, 0.04);
+    --cirrel-card-from: rgba(255, 255, 255, 0.06);
+    --cirrel-card-to: rgba(255, 255, 255, 0.015);
+    --cirrel-edge: rgba(255, 255, 255, 0.15);
+    --cirrel-edge-hover: rgba(255, 255, 255, 0.28);
+    --cirrel-rim: rgba(255, 255, 255, 0.08);
+    --cirrel-rim-hover: rgba(255, 255, 255, 0.18);
+    --cirrel-shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 20px 44px -22px rgba(0, 0, 0, 0.75);
+    --cirrel-shadow-lg: 0 4px 14px rgba(0, 0, 0, 0.5), 0 40px 90px -28px rgba(0, 0, 0, 0.95);
   }
 
   html {
@@ -106,6 +132,142 @@
   background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.12) 50%, transparent 100%);
   pointer-events: none;
 }
+
+/* ==========================================================================
+   CIRREL GLASSMORPHISM SUITE (120fps Hardware-Accelerated Tokens)
+   ========================================================================== */
+
+/* Aceleración obligatoria por hardware GPU para todas las superficies con backdrop-filter (120fps) */
+[class*='backdrop-blur'],
+.cirrel-glass-nav,
+.cirrel-glass-card,
+.cirrel-glass-pill {
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+/* Cápsula de navegación flotante */
+.cirrel-glass-nav {
+  background-color: var(--cirrel-glass-nav);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid var(--cirrel-rim);
+  box-shadow: inset 0 1px 0 0 var(--cirrel-edge), var(--cirrel-shadow);
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+/* Superficie translúcida multicapa con gradiente angular y brillo especular */
+.cirrel-glass-card {
+  position: relative;
+  background: linear-gradient(155deg, var(--cirrel-card-from) 0%, var(--cirrel-card-to) 100%);
+  backdrop-filter: blur(20px) saturate(170%);
+  -webkit-backdrop-filter: blur(20px) saturate(170%);
+  border: 1px solid var(--cirrel-rim);
+  box-shadow: inset 0 1px 0 0 var(--cirrel-edge), var(--cirrel-shadow);
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  transition: border-color 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              background 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cirrel-glass-card:hover {
+  border-color: var(--cirrel-rim-hover);
+  box-shadow: inset 0 1px 0 0 var(--cirrel-edge-hover), var(--cirrel-shadow-lg);
+}
+
+/* Píldoras, insignias y botones micro-translúcidos */
+.cirrel-glass-pill {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background-color: var(--cirrel-glass);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid var(--cirrel-rim);
+  box-shadow: inset 0 1px 0 0 var(--cirrel-edge);
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  transition: border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cirrel-glass-pill:hover {
+  border-color: var(--cirrel-rim-hover);
+  background-color: var(--cirrel-glass-hi);
+  box-shadow: inset 0 1px 0 0 var(--cirrel-edge-hover), 0 4px 12px -2px rgba(0, 0, 0, 0.15);
+}
+
+/* Atmósfera lumínica: Orbes de luz y fondos de halo */
+
+/* Efecto interactivo Spotlight / Glare con CSS variables (--mouse-x, --mouse-y) a 120fps */
+.cirrel-spotlight {
+  position: relative;
+  overflow: hidden;
+}
+
+.cirrel-spotlight::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: radial-gradient(
+    450px circle at var(--mouse-x, -999px) var(--mouse-y, -999px),
+    rgba(255, 255, 255, 0.24),
+    rgba(255, 255, 255, 0.04) 30%,
+    transparent 60%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 2;
+}
+
+.cirrel-spotlight::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    380px circle at var(--mouse-x, -999px) var(--mouse-y, -999px),
+    rgba(59, 130, 246, 0.08),
+    transparent 65%
+  );
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 1;
+}
+
+.cirrel-spotlight:hover::before,
+.cirrel-spotlight:hover::after {
+  opacity: 1;
+}
+
+.cirrel-light-orb {
+  position: absolute;
+  border-radius: 9999px;
+  pointer-events: none;
+  filter: blur(80px);
+  opacity: 0.6;
+  transform: translateZ(0);
+  will-change: transform;
+}
+
 
 /* ==========================================================================
    ANULACIÓN DE FONDO AMARILLO DE AUTOCOMPLETADO (WebKit / iOS Safari / Chrome)

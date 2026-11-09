@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, startTransition } from 'react';
 import { supabase } from './lib/supabase';
 import type { Profile, ActiveSessionData } from './types';
 import { lazy, Suspense } from 'react';
@@ -243,7 +243,7 @@ export default function App() {
         <Suspense fallback={<FullPageLoadingFallback />}>
           <LoginPage
             onSuccess={handleLoginSuccess}
-            onBackToLanding={() => setPublicView('landing')}
+            onBackToLanding={() => startTransition(() => setPublicView('landing'))}
           />
         </Suspense>
       );
@@ -252,7 +252,7 @@ export default function App() {
     return (
       <Suspense fallback={<FullPageLoadingFallback />}>
         <LandingPage
-          onNavigateToLogin={() => setPublicView('login')}
+          onNavigateToLogin={() => startTransition(() => setPublicView('login'))}
         />
       </Suspense>
     );
