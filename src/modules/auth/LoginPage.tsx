@@ -11,6 +11,7 @@ import {
   Clock,
   X,
   ArrowLeft,
+  Check,
 } from 'lucide-react';
 import { translateAuthError } from '../../utils/authErrorMapper';
 
@@ -289,262 +290,271 @@ export const LoginPage: React.FC<LoginPageProps> = ({
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#070b13] flex items-center justify-center p-4 sm:p-6 lg:p-10 relative overflow-hidden select-none">
+    <div className="min-h-dvh w-full bg-[#070b13] flex flex-col items-center justify-center px-4 py-6 sm:px-6 lg:px-8 relative overflow-x-hidden select-none">
       {/* Fondo Poligonal Geométrico */}
       <PolygonalFacetBackground />
 
       {/* Resplandor ambiental central en azul noche sutil */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[720px] h-[520px] bg-blue-600/10 rounded-full blur-[150px] pointer-events-none" />
 
-      {/* Botón Volver al inicio si está disponible */}
-      {onBackToLanding && (
-        <motion.button
-          type="button"
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.96 }}
-          transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-          onClick={onBackToLanding}
-          className="cirrel-glass-pill absolute top-6 left-6 z-20 flex items-center gap-2 text-xs font-semibold text-zinc-300 hover:text-white transition-colors cursor-pointer px-4 py-2 rounded-full border border-white/[0.12] shadow-lg will-change-transform"
-        >
-          <ArrowLeft className="w-4 h-4 text-blue-400" />
-          <span>Volver al inicio</span>
-        </motion.button>
-      )}
-
-      {/* TARJETA CENTRAL EN UN SOLO TONO OSCURO HOMOGÉNEO */}
-      <div className="relative z-10 w-full max-w-4xl bg-[#0c121e]/95 backdrop-blur-2xl rounded-[26px] md:rounded-[28px] shadow-[0_25px_70px_rgba(0,0,0,0.85),0_0_35px_rgba(14,165,233,0.06)] overflow-hidden grid grid-cols-1 md:grid-cols-2 min-h-[520px] md:min-h-[570px] border border-slate-800/90">
+      {/* Contenedor Central Único: Flujo Vertical 100% Centrado sin desbordamiento */}
+      <div className="w-full max-w-[420px] sm:max-w-[440px] lg:max-w-4xl mx-auto flex flex-col gap-3 sm:gap-4 relative z-10">
         
-        {/* ======================================================== */}
-        {/* PANEL IZQUIERDO: IDENTIDAD INSTITUCIONAL                 */}
-        {/* ======================================================== */}
-        <div className="relative bg-[#090e18] p-8 sm:p-10 md:p-12 flex flex-col justify-center items-center text-center overflow-hidden border-b md:border-b-0 md:border-r border-slate-800/80">
+        {/* Ubicación Correcta de "Volver al inicio": Encima de la tarjeta, alineado a la izquierda */}
+        {onBackToLanding && (
+          <div className="w-full flex justify-start">
+            <motion.button
+              type="button"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.96 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+              onClick={onBackToLanding}
+              className="cirrel-glass-pill inline-flex items-center gap-2 px-3.5 py-1.5 text-xs sm:text-sm font-semibold text-zinc-300 hover:text-white whitespace-nowrap cursor-pointer rounded-full border border-white/[0.12] shadow-md will-change-transform"
+            >
+              <ArrowLeft className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+              <span>Volver al inicio</span>
+            </motion.button>
+          </div>
+        )}
+
+        {/* TARJETA CIRREL GLASS: 100% de ancho en móvil, grid simétrico en pantallas grandes */}
+        <div className="cirrel-glass-card w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-[0_25px_70px_rgba(0,0,0,0.85),0_0_35px_rgba(14,165,233,0.06)] border border-white/[0.1] lg:grid lg:grid-cols-12">
           
-          {/* Malla poligonal interna */}
-          <div className="absolute inset-0 opacity-20 pointer-events-none">
-            <svg
-              className="w-full h-full object-cover"
-              viewBox="0 0 600 600"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <polygon points="0,0 300,100 120,400" fill="#1e293b" fillOpacity="0.4" />
-              <polygon points="300,100 600,0 480,320" fill="#0f172a" fillOpacity="0.6" />
-              <polygon points="120,400 480,320 300,600" fill="#334155" fillOpacity="0.25" />
-              <polygon points="0,0 120,400 0,600" fill="#0b0f19" fillOpacity="0.7" />
-              <polygon points="600,0 600,600 480,320" fill="#1e293b" fillOpacity="0.3" />
-              <polygon points="0,600 300,600 600,600" fill="#0a0e17" fillOpacity="0.8" />
-            </svg>
-          </div>
-
-          {/* Destello radial tenue */}
-          <div className="absolute inset-0 bg-radial from-blue-500/10 via-transparent to-transparent pointer-events-none" />
-
-          {/* Contenido institucional */}
-          <div className="relative z-10 w-full max-w-xs mx-auto flex flex-col items-center py-6">
+          {/* ======================================================== */}
+          {/* BLOQUE DE IDENTIDAD INSTITUCIONAL (COMPACTO Y PROPORCIONAL) */}
+          {/* ======================================================== */}
+          <div className="relative bg-[#090e18]/85 p-5 sm:p-7 lg:p-10 flex flex-col justify-center items-center text-center overflow-hidden border-b lg:border-b-0 lg:border-r border-white/[0.08] lg:col-span-5">
             
-            {/* Logotipo e Isotipo Institucional Integrado */}
-            <div
-              onClick={(e) => {
-                e.preventDefault();
-                window.location.reload();
-              }}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  window.location.reload();
-                }
-              }}
-              role="button"
-              tabIndex={0}
-              title="Recargar plataforma"
-              aria-label="Recargar plataforma"
-              className="flex items-center justify-center gap-3 mb-4 cursor-pointer select-none group active:scale-95 transition-transform"
-            >
-              <div className="w-11 h-11 rounded-xl bg-gradient-to-tr from-blue-600 to-cyan-500 flex items-center justify-center text-white shadow-lg shadow-blue-500/30 ring-1 ring-cyan-400/40 group-hover:ring-cyan-300 transition-all shrink-0">
-                <Shield className="w-6 h-6 text-white" strokeWidth={2.3} />
-              </div>
-              <div className="flex flex-col text-left">
-                <span className="text-[10px] font-mono tracking-[0.22em] text-slate-400 uppercase font-bold leading-none">
-                  PLATAFORMA OFICIAL
-                </span>
-                <span className="text-2xl sm:text-3xl font-black tracking-tight text-white leading-tight font-sans mt-0.5">
-                  {brandName === 'ControlElectoral' ? (
-                    <>
-                      Control<span className="text-cyan-400 font-extrabold">Electoral</span>
-                    </>
-                  ) : (
-                    brandName
-                  )}
-                </span>
-              </div>
-            </div>
-
-            {/* Separador Limpio y Elegante sin parches oscuros */}
-            <div className="flex items-center justify-center gap-3 my-5 w-full max-w-[280px]">
-              <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent to-slate-700/80" />
-              <span className="text-[10px] tracking-[0.3em] font-semibold text-slate-400 uppercase select-none">
-                Acceso al Sistema
-              </span>
-              <div className="h-[1px] flex-1 bg-gradient-to-l from-transparent to-slate-700/80" />
-            </div>
-
-            {/* Subtítulo Temático Oficial */}
-            <p className="text-[11px] font-semibold text-slate-400 tracking-[0.22em] uppercase select-none">
-              {tagline}
-            </p>
-          </div>
-        </div>
-
-        {/* ======================================================== */}
-        {/* PANEL DERECHO: FORMULARIO EN EL MISMO TONO OSCURO        */}
-        {/* ======================================================== */}
-        <div className="bg-[#0c121e] p-8 sm:p-10 md:p-14 flex flex-col justify-center relative">
-          <div className="max-w-sm w-full mx-auto">
-            
-            {/* Encabezado */}
-            <div className="mb-7">
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-                Bienvenido
-              </h2>
-              <p className="text-xs sm:text-sm text-slate-400 mt-1 font-medium">
-                Ingresa tus credenciales oficiales para continuar.
-              </p>
-            </div>
-
-            {/* Alerta de Sesión Expirada */}
-            {timeoutMessage && (
-              <div className="mb-5 rounded-xl bg-amber-500/10 border border-amber-500/30 px-3.5 py-2.5 text-xs text-amber-300 flex items-start justify-between gap-2 animate-in fade-in duration-300">
-                <div className="flex items-start gap-2">
-                  <Clock className="w-4 h-4 shrink-0 text-amber-400 mt-0.5" />
-                  <span className="leading-snug">{timeoutMessage}</span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setTimeoutMessage(null)}
-                  className="text-amber-400 hover:text-amber-200 p-0.5 shrink-0 cursor-pointer"
-                >
-                  <X className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            )}
-
-            {/* Alerta de Error */}
-            {errorMessage && (
-              <div className="mb-5 p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs font-semibold flex items-start gap-2 animate-in fade-in duration-300">
-                <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-rose-400" />
-                <span className="leading-snug">{errorMessage}</span>
-              </div>
-            )}
-
-            {/* Notificación informativa */}
-            {infoMessage && (
-              <div className="mb-5 p-3 rounded-xl bg-blue-500/10 border border-blue-500/30 text-blue-300 text-xs font-medium flex items-start justify-between gap-2 animate-in fade-in duration-300">
-                <span>{infoMessage}</span>
-                <button
-                  type="button"
-                  onClick={() => setInfoMessage(null)}
-                  className="text-blue-400 hover:text-blue-200 cursor-pointer"
-                >
-                  <X className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            )}
-
-            <form onSubmit={handleSubmit} autoComplete="on" className="space-y-4 sm:space-y-5">
-              
-              {/* CAMPO: USUARIO / CORREO */}
-              <div className="space-y-1.5">
-                <label className="text-[11px] font-bold text-slate-300 uppercase tracking-wider block">
-                  Usuario / Correo Electrónico
-                </label>
-                <div className="flex items-center bg-[#070b13] border border-slate-700/80 rounded-xl px-3.5 py-2.5 focus-within:bg-[#05080e] focus-within:border-cyan-400 focus-within:ring-2 focus-within:ring-cyan-400/20 transition-all">
-                  <span className="text-slate-500 font-mono text-sm mr-2.5 select-none shrink-0">
-                    @
-                  </span>
-                  <input
-                    type="email"
-                    name="email"
-                    autoComplete="email username"
-                    list="saved-emails-list"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="usuario@campana.com"
-                    disabled={loading}
-                    className="w-full bg-transparent text-sm text-white placeholder-slate-500 focus:outline-none font-medium login-input"
-                  />
-                  <datalist id="saved-emails-list">
-                    {savedEmails.map((item) => (
-                      <option key={item} value={item} />
-                    ))}
-                  </datalist>
-                </div>
-              </div>
-
-              {/* CAMPO: CONTRASEÑA */}
-              <div className="space-y-1.5">
-                <div className="flex items-center justify-between">
-                  <label className="text-[11px] font-bold text-slate-300 uppercase tracking-wider">
-                    Contraseña
-                  </label>
-                  <button
-                    type="button"
-                    onClick={handleForgotPasswordClick}
-                    className="text-xs font-semibold text-cyan-400 hover:text-cyan-300 hover:underline cursor-pointer"
-                  >
-                    ¿Olvidaste tu contraseña?
-                  </button>
-                </div>
-                <div className="flex items-center bg-[#070b13] border border-slate-700/80 rounded-xl px-3.5 py-2.5 focus-within:bg-[#05080e] focus-within:border-cyan-400 focus-within:ring-2 focus-within:ring-cyan-400/20 transition-all">
-                  <span className="text-slate-500 font-mono text-sm mr-2.5 select-none shrink-0">
-                    #
-                  </span>
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    name="password"
-                    autoComplete="current-password"
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
-                    disabled={loading}
-                    className="w-full bg-transparent text-sm text-white placeholder-slate-500 focus:outline-none font-medium tracking-wide login-input"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="text-slate-400 hover:text-slate-200 ml-2 focus:outline-none cursor-pointer"
-                    aria-label={showPassword ? 'Ocultar contraseña' : 'Ver contraseña'}
-                  >
-                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
-                </div>
-              </div>
-
-              {/* Recordar dispositivo */}
-              <div className="flex items-center justify-between pt-0.5">
-                <label className="flex items-center gap-2 cursor-pointer select-none">
-                  <input
-                    type="checkbox"
-                    checked={rememberMe}
-                    onChange={(e) => setRememberMe(e.target.checked)}
-                    className="w-3.5 h-3.5 rounded border-slate-700 bg-[#070b13] text-cyan-500 focus:ring-0 cursor-pointer accent-cyan-500"
-                  />
-                  <span className="text-xs text-slate-400 font-medium">Recordar este dispositivo</span>
-                </label>
-              </div>
-
-              {/* BOTÓN: INICIAR SESIÓN */}
-              <button
-                type="submit"
-                disabled={loading}
-              className="w-full mt-2 bg-[#141418] hover:bg-[#1b1b20] text-white font-bold py-3.5 px-6 rounded-xl border border-white/[0.08] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)] transition-[background-color,transform,box-shadow] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-cyan-300/80 flex items-center justify-center gap-2 text-sm disabled:opacity-60 cursor-pointer"
+            {/* Malla poligonal decorativa interna */}
+            <div className="absolute inset-0 opacity-20 pointer-events-none">
+              <svg
+                className="w-full h-full object-cover"
+                viewBox="0 0 600 600"
+                xmlns="http://www.w3.org/2000/svg"
               >
-                {loading && <Loader2 className="w-4 h-4 animate-spin" />}
-                <span>{loading ? 'Verificando credenciales...' : 'Iniciar Sesión'}</span>
-              </button>
-            </form>
-          </div>
-        </div>
+                <polygon points="0,0 300,100 120,400" fill="#1e293b" fillOpacity="0.4" />
+                <polygon points="300,100 600,0 480,320" fill="#0f172a" fillOpacity="0.6" />
+                <polygon points="120,400 480,320 300,600" fill="#334155" fillOpacity="0.25" />
+                <polygon points="0,0 120,400 0,600" fill="#0b0f19" fillOpacity="0.7" />
+                <polygon points="600,0 600,600 480,320" fill="#1e293b" fillOpacity="0.3" />
+                <polygon points="0,600 300,600 600,600" fill="#0a0e17" fillOpacity="0.8" />
+              </svg>
+            </div>
 
+            {/* Destello radial tenue */}
+            <div className="absolute inset-0 bg-radial from-blue-500/10 via-transparent to-transparent pointer-events-none" />
+
+            {/* Contenido institucional compacto */}
+            <div className="relative z-10 w-full flex flex-col items-center">
+              
+              {/* Logotipo e Isotipo con Escala Fluida */}
+              <div
+                onClick={(e) => {
+                  e.preventDefault();
+                  window.location.reload();
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    window.location.reload();
+                  }
+                }}
+                role="button"
+                tabIndex={0}
+                title="Recargar plataforma"
+                aria-label="Recargar plataforma"
+                className="flex items-center justify-center gap-2.5 sm:gap-3 cursor-pointer select-none group active:scale-95 transition-transform"
+              >
+                <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-tr from-blue-600 to-cyan-500 flex items-center justify-center text-white shadow-lg shadow-blue-500/30 ring-1 ring-cyan-400/40 group-hover:ring-cyan-300 transition-all shrink-0">
+                  <Shield className="w-5 h-5 sm:w-6 sm:h-6 text-white" strokeWidth={2.3} />
+                </div>
+                <div className="flex flex-col text-left">
+                  <span className="text-[9px] sm:text-[10px] font-mono tracking-[0.22em] text-slate-400 uppercase font-bold leading-none">
+                    PLATAFORMA OFICIAL
+                  </span>
+                  <span className="text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-white leading-tight font-sans mt-0.5">
+                    {brandName === 'ControlElectoral' ? (
+                      <>
+                        Control<span className="text-cyan-400 font-extrabold">Electoral</span>
+                      </>
+                    ) : (
+                      brandName
+                    )}
+                  </span>
+                </div>
+              </div>
+
+              {/* Banda Única Compacta: ACCESO AL SISTEMA • GESTIÓN DE PADRÓN & TERRITORIO */}
+              <div className="flex items-center justify-center gap-2 text-[10px] sm:text-[11px] font-mono tracking-wider text-slate-400 uppercase font-semibold mt-3 text-center">
+                <span>Acceso al Sistema</span>
+                <span className="text-cyan-400">•</span>
+                <span className="truncate">{tagline}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* ======================================================== */}
+          {/* BLOQUE DERECHO / CUERPO DEL FORMULARIO                  */}
+          {/* ======================================================== */}
+          <div className="bg-[#0c121e]/95 p-5 sm:p-7 lg:p-10 flex flex-col justify-center relative lg:col-span-7">
+            <div className="w-full">
+              
+              {/* Encabezado del Formulario */}
+              <div className="mb-5 sm:mb-6">
+                <h2 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight">
+                  Bienvenido
+                </h2>
+                <p className="text-xs sm:text-sm text-slate-400 mt-0.5 font-medium">
+                  Ingresa tus credenciales oficiales para continuar.
+                </p>
+              </div>
+
+              {/* Alerta de Sesión Expirada */}
+              {timeoutMessage && (
+                <div className="mb-4 rounded-xl bg-amber-500/10 border border-amber-500/30 px-3.5 py-2.5 text-xs text-amber-300 flex items-start justify-between gap-2 animate-in fade-in duration-300">
+                  <div className="flex items-start gap-2">
+                    <Clock className="w-4 h-4 shrink-0 text-amber-400 mt-0.5" />
+                    <span className="leading-snug">{timeoutMessage}</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setTimeoutMessage(null)}
+                    className="text-amber-400 hover:text-amber-200 p-0.5 shrink-0 cursor-pointer"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              )}
+
+              {/* Alerta de Error */}
+              {errorMessage && (
+                <div className="mb-4 p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs font-semibold flex items-start gap-2 animate-in fade-in duration-300">
+                  <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-rose-400" />
+                  <span className="leading-snug">{errorMessage}</span>
+                </div>
+              )}
+
+              {/* Notificación informativa */}
+              {infoMessage && (
+                <div className="mb-4 p-3 rounded-xl bg-blue-500/10 border border-blue-500/30 text-blue-300 text-xs font-medium flex items-start justify-between gap-2 animate-in fade-in duration-300">
+                  <span>{infoMessage}</span>
+                  <button
+                    type="button"
+                    onClick={() => setInfoMessage(null)}
+                    className="text-blue-400 hover:text-blue-200 cursor-pointer"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              )}
+
+              <form onSubmit={handleSubmit} autoComplete="on" className="space-y-4">
+                
+                {/* CAMPO: USUARIO / CORREO */}
+                <div className="space-y-1.5">
+                  <label className="text-[11px] font-bold text-slate-300 uppercase tracking-wider block">
+                    Usuario / Correo Electrónico
+                  </label>
+                  <div className="w-full h-11 sm:h-12 flex items-center bg-[#070b13] border border-slate-700/80 rounded-xl px-3.5 focus-within:bg-[#05080e] focus-within:border-cyan-400 focus-within:ring-2 focus-within:ring-cyan-400/20 transition-all">
+                    <span className="text-slate-500 font-mono text-sm mr-2.5 select-none shrink-0">
+                      @
+                    </span>
+                    <input
+                      type="email"
+                      name="email"
+                      autoComplete="email username"
+                      list="saved-emails-list"
+                      required
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="usuario@campana.com"
+                      disabled={loading}
+                      className="w-full bg-transparent text-sm sm:text-base text-white placeholder-slate-500 focus:outline-none font-medium login-input"
+                    />
+                    <datalist id="saved-emails-list">
+                      {savedEmails.map((item) => (
+                        <option key={item} value={item} />
+                      ))}
+                    </datalist>
+                  </div>
+                </div>
+
+                {/* CAMPO: CONTRASEÑA CON TEXTO SIN PARTIR */}
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between gap-2">
+                    <label className="text-[11px] font-bold text-slate-300 uppercase tracking-wider shrink-0">
+                      Contraseña
+                    </label>
+                    <button
+                      type="button"
+                      onClick={handleForgotPasswordClick}
+                      className="text-xs font-semibold text-cyan-400 hover:text-cyan-300 hover:underline cursor-pointer whitespace-nowrap"
+                    >
+                      ¿Olvidaste tu contraseña?
+                    </button>
+                  </div>
+                  <div className="w-full h-11 sm:h-12 flex items-center bg-[#070b13] border border-slate-700/80 rounded-xl px-3.5 focus-within:bg-[#05080e] focus-within:border-cyan-400 focus-within:ring-2 focus-within:ring-cyan-400/20 transition-all">
+                    <span className="text-slate-500 font-mono text-sm mr-2.5 select-none shrink-0">
+                      #
+                    </span>
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      name="password"
+                      autoComplete="current-password"
+                      required
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="••••••••"
+                      disabled={loading}
+                      className="w-full bg-transparent text-sm sm:text-base text-white placeholder-slate-500 focus:outline-none font-medium tracking-wide login-input"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="text-slate-400 hover:text-slate-200 ml-2 focus:outline-none cursor-pointer shrink-0"
+                      aria-label={showPassword ? 'Ocultar contraseña' : 'Ver contraseña'}
+                    >
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                </div>
+
+                {/* RECORDAR DISPOSITIVO CON CHECKBOX ESTILIZADO OSCURO */}
+                <div className="flex items-center justify-between pt-0.5">
+                  <label className="flex items-center gap-2.5 cursor-pointer select-none group">
+                    <div className="relative flex items-center justify-center">
+                      <input
+                        type="checkbox"
+                        checked={rememberMe}
+                        onChange={(e) => setRememberMe(e.target.checked)}
+                        className="sr-only peer"
+                      />
+                      <div className="w-4 h-4 rounded border border-slate-600 bg-white/[0.04] peer-checked:bg-blue-600 peer-checked:border-blue-500 peer-focus-visible:ring-2 peer-focus-visible:ring-cyan-400/40 transition-all flex items-center justify-center shadow-inner">
+                        <Check className="w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity stroke-[3]" />
+                      </div>
+                    </div>
+                    <span className="text-xs text-slate-400 group-hover:text-slate-300 transition-colors font-medium">
+                      Recordar este dispositivo
+                    </span>
+                  </label>
+                </div>
+
+                {/* BOTÓN: INICIAR SESIÓN CON FÍSICA CIRREL GLASS */}
+                <motion.button
+                  type="submit"
+                  disabled={loading}
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                  className="cirrel-glass-pill w-full mt-2 text-white font-bold h-11 sm:h-12 px-6 rounded-xl border border-blue-400/30 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 shadow-lg shadow-blue-600/30 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/80 flex items-center justify-center gap-2 text-sm disabled:opacity-60 cursor-pointer will-change-transform"
+                >
+                  {loading && <Loader2 className="w-4 h-4 animate-spin text-white" />}
+                  <span>{loading ? 'Verificando credenciales...' : 'Iniciar Sesión'}</span>
+                </motion.button>
+              </form>
+            </div>
+          </div>
+
+        </div>
       </div>
     </div>
   );

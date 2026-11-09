@@ -51,6 +51,17 @@ const appleSoftSpring = {
 // ----------------------------------------------------------------------------
 // SISTEMA DE ANIMACIÓN CIRREL: ESCALONADO, ELEVACIÓN SUAVE Y CURVA CUBIC-BEZIER
 // ----------------------------------------------------------------------------
+const isMobileClient =
+  typeof window !== 'undefined' &&
+  (window.innerWidth < 768 || (typeof window.matchMedia === 'function' && window.matchMedia('(pointer: coarse)').matches));
+
+// Viewport predictivo con margen anticipado de 180px para carga instantánea al bajar
+export const cirrelViewport = {
+  once: true,
+  amount: 0.05,
+  margin: '0px 0px 180px 0px',
+};
+
 export const cirrelEase = [0.16, 1, 0.3, 1] as const;
 
 export const cirrelStaggerContainer: Variants = {
@@ -58,8 +69,8 @@ export const cirrelStaggerContainer: Variants = {
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.06,
-      delayChildren: 0.02,
+      staggerChildren: isMobileClient ? 0.025 : 0.06,
+      delayChildren: 0.01,
     },
   },
 };
@@ -67,16 +78,16 @@ export const cirrelStaggerContainer: Variants = {
 export const cirrelFadeUpItem: Variants = {
   hidden: {
     opacity: 0,
-    y: 20,
-    scale: 0.97,
+    y: isMobileClient ? 8 : 20,
+    scale: isMobileClient ? 0.99 : 0.97,
   },
   visible: {
     opacity: 1,
     y: 0,
     scale: 1,
     transition: {
-      duration: 0.65,
-      ease: [0.16, 1, 0.3, 1],
+      duration: isMobileClient ? 0.22 : 0.55,
+      ease: cirrelEase,
     },
   },
 };
@@ -229,8 +240,17 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin }) =
   // INICIALIZACIÓN LENIS (60/120 FPS FLUID SCROLLING)
   // --------------------------------------------------------------------------
   useEffect(() => {
+    // Si es dispositivo táctil o pantalla pequeña, usar scroll nativo del SO sin overhead de JS
+    const isTouchOrMobile =
+      typeof window !== 'undefined' &&
+      ((typeof window.matchMedia === 'function' && window.matchMedia('(pointer: coarse)').matches) || window.innerWidth < 1024);
+
+    if (isTouchOrMobile) {
+      return;
+    }
+
     const lenis = new Lenis({
-      duration: 1.1,
+      duration: 1.0,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       orientation: 'vertical',
       gestureOrientation: 'vertical',
@@ -447,7 +467,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin }) =
               variants={keynoteContainer}
               initial="hidden"
               whileInView="visible"
-              viewport={{ once: true }}
+              viewport={cirrelViewport}
               className="lg:col-span-7 text-left space-y-6"
             >
               <motion.div variants={keynoteItem}>
@@ -530,7 +550,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin }) =
               variants={keynoteContainer}
               initial="hidden"
               whileInView="visible"
-              viewport={{ once: true }}
+              viewport={cirrelViewport}
               className="lg:col-span-5 grid grid-cols-2 gap-3.5 w-full"
             >
               {[
@@ -572,7 +592,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin }) =
               variants={keynoteContainer}
               initial="hidden"
               whileInView="visible"
-              viewport={{ once: true, margin: '-60px' }}
+              viewport={cirrelViewport}
               className="lg:col-span-4 text-left space-y-4"
             >
               <motion.span variants={keynoteItem} className="text-xs font-mono font-bold uppercase tracking-wider text-blue-400 block">
@@ -612,7 +632,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin }) =
               variants={keynoteContainer}
               initial="hidden"
               whileInView="visible"
-              viewport={{ once: true, margin: '-60px' }}
+              viewport={cirrelViewport}
               className="lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-left"
             >
               {[
@@ -677,7 +697,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin }) =
             variants={keynoteContainer}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, margin: '-60px' }}
+            viewport={cirrelViewport}
             className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10 text-left"
           >
             <div>
@@ -712,6 +732,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin }) =
                   type="button"
                   onClick={() => setSelectedCorpId(corp.id)}
                   onMouseMove={(e) => {
+                    if (typeof window !== 'undefined' && typeof window.matchMedia === 'function' && window.matchMedia('(pointer: coarse)').matches) return;
                     const rect = e.currentTarget.getBoundingClientRect();
                     e.currentTarget.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
                     e.currentTarget.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
@@ -888,7 +909,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin }) =
           <motion.div
             initial={{ opacity: 0, y: 24, scale: 0.98 }}
             whileInView={{ opacity: 1, y: 0, scale: 1 }}
-            viewport={{ once: true, margin: '-60px' }}
+            viewport={cirrelViewport}
             transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
             className="cirrel-glass-card p-8 sm:p-12 rounded-3xl text-center relative overflow-hidden"
           >
@@ -924,7 +945,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin }) =
           id="contacto"
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, margin: '-60px' }}
+          viewport={cirrelViewport}
           variants={cirrelStaggerContainer}
           className="scroll-mt-24 py-16 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto border-t border-white/[0.08] text-left"
         >

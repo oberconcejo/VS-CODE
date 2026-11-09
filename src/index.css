@@ -324,3 +324,51 @@ html.lenis, html.lenis body {
 .lenis.lenis-smooth iframe {
   pointer-events: none;
 }
+
+
+/* ==========================================================================
+   OPTIMIZACIONES DE RENDIMIENTO MÓVIL (STAFF MOBILE PERFORMANCE)
+   ========================================================================== */
+
+/* Scroll nativo ultra fluido acelerado por hardware para iOS / Android */
+html, body {
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 768px) {
+  /* Reducción de blur a 8px ligero con fondo ligeramente más opaco */
+  .cirrel-glass-card,
+  .cirrel-glass-nav,
+  .cirrel-glass-pill,
+  [class*='backdrop-blur'] {
+    backdrop-filter: blur(8px) saturate(140%) !important;
+    -webkit-backdrop-filter: blur(8px) saturate(140%) !important;
+    background-color: rgba(15, 23, 42, 0.82) !important;
+  }
+
+  /* Reducción de radio de orbes y luces difusas para evitar GPU throttling */
+  .cirrel-light-orb,
+  [class*='blur-[8'],
+  [class*='blur-[9'],
+  [class*='blur-[1'] {
+    filter: blur(45px) !important;
+  }
+
+  /* Renderizado diferido ultra-eficiente de secciones inferiores */
+  #caracteristicas,
+  #cobertura,
+  #seguridad,
+  #contacto,
+  footer {
+    content-visibility: auto;
+    contain-intrinsic-size: 1px 600px;
+  }
+}
+
+/* Desactivación completa de spotlight en pantallas táctiles */
+@media (pointer: coarse), (hover: none) {
+  .cirrel-spotlight::before,
+  .cirrel-spotlight::after {
+    display: none !important;
+  }
+}
