@@ -306,6 +306,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin }) =
       {/* Fondo Arquitectónico Multicapa */}
       <ArchitecturalBackground />
 
+      {/* Escudo superior degradado para blindar la lectura bajo el Navbar flotante */}
+      <div className="fixed top-0 inset-x-0 h-20 z-40 pointer-events-none bg-gradient-to-b from-[#04060B] via-[#04060B]/90 to-transparent" />
+
       {/* =========================================================================
           1. NAVBAR ESTILO macOS / iOS (APPLE VIBRANCY & SPRING PHYSICS)
           ========================================================================= */}
@@ -744,7 +747,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin }) =
               return (
                 <motion.button
                   key={corp.id}
-                  layoutId={`corp-card-${corp.id}`}
                   type="button"
                   onClick={() => setSelectedCorpId(corp.id)}
                   onMouseMove={(e) => {
@@ -753,7 +755,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin }) =
                     e.currentTarget.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
                     e.currentTarget.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
                   }}
-                  whileHover={{ scale: 1.02, y: -2 }}
+                  whileHover={isDesktop ? { scale: 1.02, y: -2 } : undefined}
                   whileTap={{ scale: 0.98 }}
                   transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                   className={`cirrel-glass-card cirrel-spotlight group p-5 rounded-2xl text-left cursor-pointer relative overflow-hidden transition-all duration-300 will-change-transform ${
@@ -762,8 +764,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin }) =
                       : 'hover:border-white/[0.14]'
                   }`}
                 >
-                  {/* Glow interno activo */}
-                  {isSelected && (
+                  {/* Glow interno activo en Desktop */}
+                  {isSelected && isDesktop && (
                     <motion.div
                       layoutId="corp-active-glow"
                       transition={{ type: 'spring', stiffness: 400, damping: 30 }}
@@ -790,11 +792,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin }) =
                         {corp.name}
                       </h3>
                       {isSelected && (
-                        <motion.span
-                          layoutId="active-dot-corp"
-                          transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-                          className="w-1.5 h-1.5 rounded-full bg-blue-400"
-                        />
+                        <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
                       )}
                     </div>
                     <p className="text-xs text-zinc-400 font-medium line-clamp-1">
@@ -811,10 +809,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin }) =
             <AnimatePresence mode="wait">
               <motion.div
                 key={selectedCorp.id}
-                initial={{ opacity: 0, scale: 0.98, y: 12 }}
+                initial={isDesktop ? { opacity: 0, scale: 0.98, y: 12 } : false}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.98, y: -8 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                exit={isDesktop ? { opacity: 0, scale: 0.98, y: -8 } : undefined}
+                transition={isDesktop ? { type: 'spring', stiffness: 400, damping: 30 } : { duration: 0.1 }}
                 onMouseMove={(e) => {
                   const rect = e.currentTarget.getBoundingClientRect();
                   e.currentTarget.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
@@ -882,9 +880,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin }) =
                     {selectedCorp.responsibilities.map((r, i) => (
                       <motion.li
                         key={i}
-                        initial={{ opacity: 0, y: 6 }}
+                        initial={isDesktop ? { opacity: 0, y: 6 } : false}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: i * 0.05, ...appleSpring }}
+                        transition={isDesktop ? { delay: i * 0.04, ...appleSpring } : { duration: 0 }}
                         className="cirrel-glass-card p-3 rounded-xl border border-white/[0.06] flex items-start gap-2.5 text-xs text-zinc-300"
                       >
                         <div className="w-5 h-5 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0 mt-0.5">
@@ -923,9 +921,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin }) =
             ========================================================================= */}
         <section id="seguridad" className="scroll-mt-28 py-16 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto text-center border-t border-white/[0.08]">
           <motion.div
-            initial={{ opacity: 0, y: 24, scale: 0.98 }}
-            whileInView={{ opacity: 1, y: 0, scale: 1 }}
-            viewport={cirrelViewport}
+            initial={isDesktop ? { opacity: 0, y: 24, scale: 0.98 } : false}
+            whileInView={isDesktop ? { opacity: 1, y: 0, scale: 1 } : undefined}
+            animate={isDesktop ? undefined : { opacity: 1, y: 0, scale: 1 }}
+            viewport={isDesktop ? cirrelViewport : undefined}
             transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
             className="cirrel-glass-card p-8 sm:p-12 rounded-3xl text-center relative overflow-hidden"
           >

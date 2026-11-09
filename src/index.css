@@ -336,21 +336,47 @@ html, body {
 }
 
 @media (max-width: 1023px), (pointer: coarse) {
-  /* GARANTÍA RADICAL WEBKIT: Ningún bloque o texto queda invisible durante scroll */
-  main *[style*="opacity: 0"],
-  section *[style*="opacity: 0"],
+  /* GARANTÍA RADICAL WEBKIT: Forzar opacidad 1 y visibilidad inmediata en toda la app */
+  [style*="opacity: 0"],
+  [style*="opacity:0"],
+  [style*="opacity: 0."],
+  [style*="opacity:0."],
+  main [style*="opacity"],
+  section [style*="opacity"],
+  article [style*="opacity"] {
+    opacity: 1 !important;
+  }
+
+  main [style*="opacity: 0"],
+  main [style*="opacity:0"],
+  section [style*="opacity: 0"],
+  section [style*="opacity:0"],
   section[style*="opacity: 0"],
+  section[style*="opacity:0"],
   div[style*="opacity: 0"],
+  div[style*="opacity:0"],
   h1[style*="opacity: 0"],
+  h1[style*="opacity:0"],
   h2[style*="opacity: 0"],
+  h2[style*="opacity:0"],
   h3[style*="opacity: 0"],
+  h3[style*="opacity:0"],
   p[style*="opacity: 0"],
+  p[style*="opacity:0"],
   span[style*="opacity: 0"],
+  span[style*="opacity:0"],
   a[style*="opacity: 0"],
-  button[style*="opacity: 0"] {
+  a[style*="opacity:0"],
+  button[style*="opacity: 0"],
+  button[style*="opacity:0"],
+  li[style*="opacity: 0"],
+  li[style*="opacity:0"],
+  ul[style*="opacity: 0"],
+  ul[style*="opacity:0"] {
     opacity: 1 !important;
     transform: none !important;
     filter: none !important;
+    transition: none !important;
   }
 
   /* Fondo sólido translúcido de alto contraste sin GPU blur para tarjetas en móvil */

@@ -1,19 +1,28 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { motion } from 'motion/react';
 
 /**
  * ArchitecturalBackground — Sistema de Fondo Multicapa Ultra-Optimizado (GPU Accelerated)
  *
  * Optimizaciones aplicadas:
- * - translate3d(0,0,0) y will-change: transform en capas de aura lumínica.
- * - Reducción del radio de blur a 80px (reduce el fill-rate cost en GPU x3).
- * - Grano analógico optimizado estático para 0 overhead por frame.
+ * - Detección estricta de Desktop: en móviles/tablets se apagan animaciones infinitas,
+ *   se elimina el filtro SVG feTurbulence (pesado en WebKit) y se usa una luz cenital ligera.
+ * - translate3d(0,0,0) en Desktop para composición directa por GPU.
  */
 export const ArchitecturalBackground: React.FC = () => {
+  const isDesktop = useMemo(() => {
+    return (
+      typeof window !== 'undefined' &&
+      window.innerWidth >= 1024 &&
+      typeof window.matchMedia === 'function' &&
+      window.matchMedia('(hover: hover) and (pointer: fine)').matches
+    );
+  }, []);
+
   return (
     <div
       aria-hidden="true"
-      className="fixed inset-0 -z-10 pointer-events-none overflow-hidden select-none transform-gpu"
+      className="fixed inset-0 -z-10 pointer-events-none overflow-hidden select-none"
     >
       {/* =======================================================================
           CAPA 1: BASE DE OBSIDIANA PROFUNDA CON DEGRADADO RADIAL CENITAL
@@ -66,104 +75,120 @@ export const ArchitecturalBackground: React.FC = () => {
           <rect width="100%" height="100%" fill="url(#geo-crosses)" />
         </svg>
 
-        {/* Haces de datos dinámicos con aceleración por hardware */}
-        <motion.div
-          animate={{
-            x: ['-20%', '120%'],
-            opacity: [0, 0.4, 0],
-          }}
-          transition={{
-            duration: 12,
-            repeat: Infinity,
-            ease: 'easeInOut',
-            delay: 1,
-          }}
-          className="absolute top-[144px] left-0 w-48 h-[1px] bg-gradient-to-r from-transparent via-cyan-400/80 to-transparent will-change-transform"
-        />
-        <motion.div
-          animate={{
-            y: ['-20%', '120%'],
-            opacity: [0, 0.3, 0],
-          }}
-          transition={{
-            duration: 15,
-            repeat: Infinity,
-            ease: 'easeInOut',
-            delay: 4,
-          }}
-          className="absolute top-0 left-[384px] w-[1px] h-48 bg-gradient-to-b from-transparent via-blue-400/80 to-transparent will-change-transform"
-        />
+        {/* Haces de datos dinámicos solo en Desktop */}
+        {isDesktop && (
+          <>
+            <motion.div
+              animate={{
+                x: ['-20%', '120%'],
+                opacity: [0, 0.4, 0],
+              }}
+              transition={{
+                duration: 12,
+                repeat: Infinity,
+                ease: 'easeInOut',
+                delay: 1,
+              }}
+              className="absolute top-[144px] left-0 w-48 h-[1px] bg-gradient-to-r from-transparent via-cyan-400/80 to-transparent will-change-transform"
+            />
+            <motion.div
+              animate={{
+                y: ['-20%', '120%'],
+                opacity: [0, 0.3, 0],
+              }}
+              transition={{
+                duration: 15,
+                repeat: Infinity,
+                ease: 'easeInOut',
+                delay: 4,
+              }}
+              className="absolute top-0 left-[384px] w-[1px] h-48 bg-gradient-to-b from-transparent via-blue-400/80 to-transparent will-change-transform"
+            />
+          </>
+        )}
       </div>
 
       {/* =======================================================================
           CAPA 3: ILUMINACIÓN VOLUMÉTRICA DIRECCIONAL OPTIMIZADA (GPU-FRIENDLY)
           ======================================================================= */}
-      <motion.div
-        animate={{
-          scale: [1, 1.05, 1],
-          opacity: [0.7, 0.88, 0.7],
-          y: [0, -10, 0],
-        }}
-        transition={{
-          duration: 18,
-          repeat: Infinity,
-          repeatType: 'reverse',
-          ease: 'easeInOut',
-        }}
-        className="absolute -top-[120px] left-1/2 -translate-x-1/2 w-[800px] h-[480px] rounded-full blur-[80px] mix-blend-screen pointer-events-none will-change-transform"
-        style={{
-          background:
-            'radial-gradient(ellipse at 50% 30%, rgba(37, 99, 235, 0.20) 0%, rgba(30, 64, 175, 0.10) 45%, transparent 70%)',
-          transform: 'translate3d(0, 0, 0)',
-        }}
-      />
+      {isDesktop ? (
+        <>
+          <motion.div
+            animate={{
+              scale: [1, 1.05, 1],
+              opacity: [0.7, 0.88, 0.7],
+              y: [0, -10, 0],
+            }}
+            transition={{
+              duration: 18,
+              repeat: Infinity,
+              repeatType: 'reverse',
+              ease: 'easeInOut',
+            }}
+            className="absolute -top-[120px] left-1/2 -translate-x-1/2 w-[800px] h-[480px] rounded-full blur-[80px] mix-blend-screen pointer-events-none will-change-transform"
+            style={{
+              background:
+                'radial-gradient(ellipse at 50% 30%, rgba(37, 99, 235, 0.20) 0%, rgba(30, 64, 175, 0.10) 45%, transparent 70%)',
+              transform: 'translate3d(0, 0, 0)',
+            }}
+          />
 
-      <motion.div
-        animate={{
-          scale: [1, 1.08, 1],
-          opacity: [0.5, 0.68, 0.5],
-          x: [0, 15, 0],
-        }}
-        transition={{
-          duration: 22,
-          repeat: Infinity,
-          repeatType: 'reverse',
-          ease: 'easeInOut',
-        }}
-        className="absolute top-[80px] left-[15%] w-[480px] h-[350px] rounded-full blur-[85px] mix-blend-screen pointer-events-none will-change-transform"
-        style={{
-          background:
-            'radial-gradient(ellipse at center, rgba(16, 185, 129, 0.10) 0%, rgba(6, 182, 212, 0.05) 50%, transparent 75%)',
-          transform: 'translate3d(0, 0, 0)',
-        }}
-      />
+          <motion.div
+            animate={{
+              scale: [1, 1.08, 1],
+              opacity: [0.5, 0.68, 0.5],
+              x: [0, 15, 0],
+            }}
+            transition={{
+              duration: 22,
+              repeat: Infinity,
+              repeatType: 'reverse',
+              ease: 'easeInOut',
+            }}
+            className="absolute top-[80px] left-[15%] w-[480px] h-[350px] rounded-full blur-[85px] mix-blend-screen pointer-events-none will-change-transform"
+            style={{
+              background:
+                'radial-gradient(ellipse at center, rgba(16, 185, 129, 0.10) 0%, rgba(6, 182, 212, 0.05) 50%, transparent 75%)',
+              transform: 'translate3d(0, 0, 0)',
+            }}
+          />
 
-      <motion.div
-        animate={{
-          scale: [1, 1.05, 1],
-          opacity: [0.45, 0.6, 0.45],
-          x: [0, -18, 0],
-        }}
-        transition={{
-          duration: 24,
-          repeat: Infinity,
-          repeatType: 'reverse',
-          ease: 'easeInOut',
-          delay: 2,
-        }}
-        className="absolute top-[160px] right-[10%] w-[440px] h-[360px] rounded-full blur-[90px] mix-blend-screen pointer-events-none will-change-transform"
-        style={{
-          background:
-            'radial-gradient(ellipse at center, rgba(245, 158, 11, 0.07) 0%, rgba(217, 119, 6, 0.03) 45%, transparent 70%)',
-          transform: 'translate3d(0, 0, 0)',
-        }}
-      />
+          <motion.div
+            animate={{
+              scale: [1, 1.05, 1],
+              opacity: [0.45, 0.6, 0.45],
+              x: [0, -18, 0],
+            }}
+            transition={{
+              duration: 24,
+              repeat: Infinity,
+              repeatType: 'reverse',
+              ease: 'easeInOut',
+              delay: 2,
+            }}
+            className="absolute top-[160px] right-[10%] w-[440px] h-[360px] rounded-full blur-[90px] mix-blend-screen pointer-events-none will-change-transform"
+            style={{
+              background:
+                'radial-gradient(ellipse at center, rgba(245, 158, 11, 0.07) 0%, rgba(217, 119, 6, 0.03) 45%, transparent 70%)',
+              transform: 'translate3d(0, 0, 0)',
+            }}
+          />
+        </>
+      ) : (
+        /* En móvil: Una única luz cenital estática y ligera con blur suave (30px) y sin mix-blend */
+        <div
+          className="absolute -top-10 left-1/2 -translate-x-1/2 w-[340px] h-[220px] rounded-full blur-[35px] pointer-events-none opacity-40"
+          style={{
+            background: 'radial-gradient(circle, rgba(37, 99, 235, 0.25) 0%, transparent 70%)',
+          }}
+        />
+      )}
 
       {/* =======================================================================
-          CAPA 4: TEXTURA DE GRANO ANALÓGICO ANTI-IA (SVG FRACTAL NOISE)
+          CAPA 4: TEXTURA DE GRANO ANALÓGICO ANTI-IA (SVG FRACTAL NOISE - SOLO DESKTOP)
           ======================================================================= */}
       <svg
-        className="absolute inset-0 w-full h-full opacity-[0.024] mix-blend-overlay pointer-events-none"
+        className="hidden lg:block absolute inset-0 w-full h-full opacity-[0.024] mix-blend-overlay pointer-events-none"
         xmlns="http://www.w3.org/2000/svg"
       >
         <filter id="architectural-noise">
