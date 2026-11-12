@@ -1,11 +1,9 @@
-import Lenis from 'lenis';
 import React, { useState, useEffect, startTransition } from 'react';
 import {
   motion,
   AnimatePresence,
   useScroll,
   useTransform,
-  useSpring,
   type Variants,
 } from 'motion/react';
 import {
@@ -68,44 +66,26 @@ export const cirrelViewport = isDesktop
 
 export const cirrelEase = [0.16, 1, 0.3, 1] as const;
 
-// En celular / tablet: 100% visible sin retraso ni opacidad cero en ningún estado
-export const cirrelStaggerContainer: Variants = isDesktop
-  ? {
-      hidden: { opacity: 0 },
-      visible: {
-        opacity: 1,
-        transition: {
-          staggerChildren: 0.06,
-          delayChildren: 0.02,
-        },
-      },
-    }
-  : {
-      hidden: { opacity: 1, y: 0, scale: 1 },
-      visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0 } },
-    };
+// Visibilidad instantánea en todos los dispositivos: cero opacidad 0 en scroll
+export const cirrelStaggerContainer: Variants = {
+  hidden: { opacity: 1 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.02,
+    },
+  },
+};
 
-export const cirrelFadeUpItem: Variants = isDesktop
-  ? {
-      hidden: {
-        opacity: 0,
-        y: 18,
-        scale: 0.98,
-      },
-      visible: {
-        opacity: 1,
-        y: 0,
-        scale: 1,
-        transition: {
-          duration: 0.5,
-          ease: cirrelEase,
-        },
-      },
-    }
-  : {
-      hidden: { opacity: 1, y: 0, scale: 1 },
-      visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0 } },
-    };
+export const cirrelFadeUpItem: Variants = {
+  hidden: { opacity: 1, y: 0, scale: 1 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { duration: 0.2, ease: cirrelEase },
+  },
+};
 
 const keynoteContainer = cirrelStaggerContainer;
 const keynoteItem = cirrelFadeUpItem;
@@ -237,56 +217,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin }) =
   const [isScrolled, setIsScrolled] = useState(false);
 
   // --------------------------------------------------------------------------
-  // SCROLL CHOREOGRAPHY & PARALLAX CON INERCIA (APPLE-LIKE PHYSICS)
+  // SCROLL NATIVO ULTRA-FLUIDO (120 FPS HARDWARE ACCELERATED)
   // --------------------------------------------------------------------------
   const { scrollY, scrollYProgress } = useScroll();
-  const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: 100,
-    damping: 30,
-    restDelta: 0.001,
-  });
 
-  // Parallax suave en hero & escala cinemática
-  const heroScale = useTransform(smoothProgress, [0, 0.25], [1, 0.96]);
-  const heroOpacity = useTransform(smoothProgress, [0, 0.25], [1, 0.65]);
-  const heroY = useTransform(smoothProgress, [0, 0.3], [0, 40]);
-
-  // --------------------------------------------------------------------------
-  // INICIALIZACIÓN LENIS (60/120 FPS FLUID SCROLLING)
-  // --------------------------------------------------------------------------
-  useEffect(() => {
-    // Si es dispositivo táctil o pantalla pequeña, usar scroll nativo del SO sin overhead de JS
-    const isTouchOrMobile =
-      typeof window !== 'undefined' &&
-      ((typeof window.matchMedia === 'function' && window.matchMedia('(pointer: coarse)').matches) || window.innerWidth < 1024);
-
-    if (isTouchOrMobile) {
-      return;
-    }
-
-    const lenis = new Lenis({
-      duration: 1.0,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      orientation: 'vertical',
-      gestureOrientation: 'vertical',
-      smoothWheel: true,
-      wheelMultiplier: 1.05,
-      touchMultiplier: 1.5,
-    });
-
-    let rafId: number;
-    function raf(time: number) {
-      lenis.raf(time);
-      rafId = requestAnimationFrame(raf);
-    }
-
-    rafId = requestAnimationFrame(raf);
-
-    return () => {
-      cancelAnimationFrame(rafId);
-      lenis.destroy();
-    };
-  }, []);
+  // Parallax instantáneo 1:1 sin retardo de físicas artificiales
+  const heroScale = useTransform(scrollYProgress, [0, 0.2], [1, 0.98]);
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.2], [1, 0.7]);
+  const heroY = useTransform(scrollYProgress, [0, 0.2], [0, 20]);
 
   // Listener nativo ultra-eficiente para el estado de scroll del Navbar
   useEffect(() => {

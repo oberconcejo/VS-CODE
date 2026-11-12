@@ -55,6 +55,7 @@
   html {
     overflow-x: clip;
     color-scheme: dark light;
+    scroll-behavior: smooth;
   }
 
   body {
@@ -308,29 +309,7 @@ input:-webkit-autofill:active {
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
-/* Smooth Scroll Nativo y Lenis 120fps */
-html.lenis, html.lenis body {
-  height: auto;
-}
-.lenis.lenis-smooth {
-  scroll-behavior: auto !important;
-}
-.lenis.lenis-smooth [data-lenis-prevent] {
-  overscroll-behavior: contain;
-}
-.lenis.lenis-stopped {
-  overflow: hidden;
-}
-.lenis.lenis-smooth iframe {
-  pointer-events: none;
-}
-
-
-/* ==========================================================================
-   OPTIMIZACIONES DE RENDIMIENTO MÓVIL (STAFF MOBILE PERFORMANCE & IOS WEBKIT)
-   ========================================================================== */
-
-/* Scroll nativo ultra fluido acelerado por hardware para iOS / Android */
+/* Scroll nativo ultra fluido acelerado por hardware para iOS / Android / Desktop */
 html, body {
   -webkit-overflow-scrolling: touch;
 }

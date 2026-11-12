@@ -13,11 +13,11 @@ export const AnimatedCounter: React.FC<AnimatedCounterProps> = ({
   value,
   prefix = '',
   suffix = '',
-  duration = 1.4,
+  duration = 0.5,
   className = '',
 }) => {
   const ref = useRef<HTMLSpanElement>(null);
-  const isInView = useInView(ref, { once: true, margin: '-40px' });
+  const isInView = useInView(ref, { once: true, margin: '0px 0px 120px 0px' });
   const [displayValue, setDisplayValue] = useState(0);
 
   useEffect(() => {
@@ -54,7 +54,7 @@ export const AnimatedCounter: React.FC<AnimatedCounterProps> = ({
   return (
     <span ref={ref} className={`tabular-nums ${className}`}>
       {prefix}
-      {displayValue.toLocaleString('es-CO')}
+      {(isInView ? displayValue : value).toLocaleString('es-CO')}
       {suffix}
     </span>
   );

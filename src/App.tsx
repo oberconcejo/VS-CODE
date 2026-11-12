@@ -2,10 +2,10 @@ import { useEffect, useState, useCallback, startTransition } from 'react';
 import { supabase } from './lib/supabase';
 import type { Profile, ActiveSessionData } from './types';
 import { lazy, Suspense } from 'react';
+import { LandingPage } from './modules/public/LandingPage';
 
 const LoginPage = lazy(() => import('./modules/auth/LoginPage').then((m) => ({ default: m.LoginPage })));
 const ResetPasswordView = lazy(() => import('./modules/auth/ResetPasswordView').then((m) => ({ default: m.ResetPasswordView })));
-const LandingPage = lazy(() => import('./modules/public/LandingPage').then((m) => ({ default: m.LandingPage })));
 const AppRouter = lazy(() => import('./routes/AppRouter').then((m) => ({ default: m.AppRouter })));
 
 function FullPageLoadingFallback() {
@@ -110,12 +110,22 @@ async function buildSessionFromAuthUser(authUser: any): Promise<ActiveSessionDat
 
 export default function App() {
   const [session, setSession] = useState<ActiveSessionData | null>(null);
-  const [loading, setLoading] = useState(true);
   const [publicView, setPublicView] = useState<'landing' | 'login' | 'reset-password'>(() => {
     if (typeof window !== 'undefined' && window.location.pathname === '/reset-password') {
       return 'reset-password';
     }
     return 'landing';
+  });
+
+  // Solo mostrar spinner a pantalla completa si se detecta sesión previa o ruta de recuperación
+  const [loading, setLoading] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return true;
+    if (window.location.pathname === '/reset-password') return true;
+    try {
+      return Object.keys(sessionStorage).some((k) => k.startsWith('sb-') && k.endsWith('-auth-token'));
+    } catch {
+      return false;
+    }
   });
 
   useEffect(() => {
@@ -250,11 +260,9 @@ export default function App() {
     }
 
     return (
-      <Suspense fallback={<FullPageLoadingFallback />}>
-        <LandingPage
-          onNavigateToLogin={() => startTransition(() => setPublicView('login'))}
-        />
-      </Suspense>
+      <LandingPage
+        onNavigateToLogin={() => startTransition(() => setPublicView('login'))}
+      />
     );
   }
 
