@@ -247,6 +247,18 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin }) =
     } catch (e) {}
   }, []);
 
+  // Bloquear scroll de fondo cuando el menú móvil esté abierto
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileMenuOpen]);
+
   const selectedCorp = CORPORATIONS.find((c) => c.id === selectedCorpId) || CORPORATIONS[0];
 
   const toggleFaq = (index: number) => {
@@ -260,6 +272,22 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin }) =
 
       {/* Escudo superior degradado para blindar la lectura bajo el Navbar flotante */}
       <div className="fixed top-0 inset-x-0 h-20 z-40 pointer-events-none bg-gradient-to-b from-[#04060B] via-[#04060B]/90 to-transparent" />
+
+      {/* Telón difuminado de fondo completo (Backdrop Blur & Dim) al abrir el menú móvil */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            key="mobile-menu-backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.22 }}
+            onClick={() => setMobileMenuOpen(false)}
+            className="fixed inset-0 z-40 bg-black/70 backdrop-blur-md pointer-events-auto"
+            aria-hidden="true"
+          />
+        )}
+      </AnimatePresence>
 
       {/* =========================================================================
           1. NAVBAR ESTILO macOS / iOS (APPLE VIBRANCY & SPRING PHYSICS)
@@ -380,7 +408,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin }) =
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -10, scale: 0.98 }}
               transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-              className="w-full max-w-6xl mt-2 lg:hidden cirrel-glass-card rounded-3xl p-4 overflow-hidden pointer-events-auto border border-white/[0.1] shadow-2xl"
+              className="w-full max-w-6xl mt-2 lg:hidden rounded-3xl p-4 overflow-hidden pointer-events-auto border border-white/[0.14] bg-[#070b14]/95 backdrop-blur-2xl shadow-[0_25px_60px_rgba(0,0,0,0.85),0_0_30px_rgba(37,99,235,0.2)]"
             >
               <nav className="flex flex-col gap-1.5 text-sm font-semibold">
                 {NAV_LINKS.map((link) => (
@@ -424,7 +452,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin }) =
       {/* =========================================================================
           CONTENEDOR MAESTRO
           ========================================================================= */}
-      <main className="flex-1 z-10 pt-24 sm:pt-28 lg:pt-32 pb-16" id="inicio">
+      <main className={`flex-1 z-10 pt-24 sm:pt-28 lg:pt-32 pb-16 transition-all duration-300 ${mobileMenuOpen ? 'blur-sm brightness-75 select-none pointer-events-none' : ''}`} id="inicio">
         {/* =========================================================================
             2. HERO SECTION CON REVELADO CINEMATOGRÁFICO DE KEYNOTE
             ========================================================================= */}
@@ -984,7 +1012,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin }) =
       {/* =========================================================================
           6. FOOTER TÉCNICO SOBRIO
           ========================================================================= */}
-      <footer className="border-t border-white/[0.08] bg-[#05070D]/85 backdrop-blur-xl py-10 px-4 sm:px-6 lg:px-8">
+      <footer className={`border-t border-white/[0.08] bg-[#05070D]/85 backdrop-blur-xl py-10 px-4 sm:px-6 lg:px-8 transition-all duration-300 ${mobileMenuOpen ? 'blur-sm brightness-75 select-none pointer-events-none' : ''}`}>
         <div className="max-w-7xl mx-auto space-y-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-2.5">
