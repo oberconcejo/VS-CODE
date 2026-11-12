@@ -233,6 +233,20 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin }) =
     });
   }, [scrollY]);
 
+  // Garantizar que al montar o recargar la página siempre quede en el inicio
+  useEffect(() => {
+    try {
+      if ('scrollRestoration' in window.history) {
+        window.history.scrollRestoration = 'manual';
+      }
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      if (window.location.hash) {
+        window.history.replaceState(null, '', window.location.pathname);
+      }
+      setActiveNav('inicio');
+    } catch (e) {}
+  }, []);
+
   const selectedCorp = CORPORATIONS.find((c) => c.id === selectedCorpId) || CORPORATIONS[0];
 
   const toggleFaq = (index: number) => {
@@ -373,7 +387,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin }) =
                   <a
                     key={link.id}
                     href={link.href}
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.preventDefault();
                       setActiveNav(link.id);
                       setMobileMenuOpen(false);
                       const target = document.querySelector(link.href);
@@ -988,7 +1003,17 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin }) =
 
             <div className="flex flex-wrap items-center gap-6 text-xs text-zinc-400 font-medium">
               {NAV_LINKS.map((link) => (
-                <a key={link.id} href={link.href} className="hover:text-white transition-colors">
+                <a
+                  key={link.id}
+                  href={link.href}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setActiveNav(link.id);
+                    const target = document.querySelector(link.href);
+                    if (target) target.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  className="hover:text-white transition-colors cursor-pointer"
+                >
                   {link.label}
                 </a>
               ))}

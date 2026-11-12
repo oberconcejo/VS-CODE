@@ -22,6 +22,19 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
     
     <title>Electoral Command Center · Plataforma de Alta Dirección</title>
+
+    <!-- Forzar inicio en scroll (0, 0) y desactivar restauración automática de scroll al recargar -->
+    <script>
+      try {
+        if ('scrollRestoration' in history) {
+          history.scrollRestoration = 'manual';
+        }
+        window.scrollTo(0, 0);
+        if (window.location.hash) {
+          history.replaceState(null, '', window.location.pathname);
+        }
+      } catch (e) {}
+    </script>
   </head>
   <body class="bg-[#fafafa] dark:bg-[#09090b] text-slate-900 dark:text-zinc-100 antialiased selection:bg-blue-600/25 selection:text-white overflow-x-hidden w-full max-w-full">
     <div id="root" class="w-full max-w-full overflow-x-hidden min-h-screen"></div>
